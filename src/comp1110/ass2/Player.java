@@ -1,17 +1,45 @@
 package comp1110.ass2;
 
+/**
+ * Represents a player in the Marrakech game, tracking their color, dirhams,
+ * rugs, and game status
+ */
 public class Player {
-    //players' rug's color
-    private String color;
-    //players' left coins
+    //player's color.
+    private char color;
+    //The number of dirhams the player has
     private int dirhams;
-    //players' rugs quantity which is not placed on the board yet.
-    private int rugsLeft;
-    //initialized the players' information
-    public Player(String color){
-        this.color = color;
-        this.dirhams = 30;
-        this.rugsLeft = 15;
+    //The number of rugs the player has.
+    private int rugsRemaining;
+    //The player's status ( 'i' for in, 'o' for out).
+    private char status;
+
+    /**
+     * Constructs a new player based on a player string.
+     *
+     * @param playerString The string representing the player's details.
+     */
+    public Player (String playerString){
+        //Sample initialization...
     }
-    //other methods should be here...
+
+    /**
+     * Transfers dirhams from this player to another.
+     *
+     * @param receiver The player receiving the dirhams.
+     * @param amount The amount of dirhams to transfer.
+     */
+
+    public void pay(Player receiver, int amount){
+        //Sample implementation...
+    }
+
+    /**
+     * Checks if this player is out of game.
+     *
+     * @return True if the player is out, false otherwise.
+     */
+    public boolean isOut(){
+        return this.status == 'o';
+    }
 }
