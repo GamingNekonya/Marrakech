@@ -1,17 +1,25 @@
 package comp1110.ass2;
 
+/**
+ * Represents the game board of Marrakech.
+ */
 public class Board {
-    //define a 7*7 board
-    private String[][] grid = new String[7][7];
+    //2D array representing the board.
+    /**
+     * Constructor to initialize the game board.
+     */
+    private Rug[][] board;
     //initialized the board, all position should be empty
     public Board(){
-        for (int i = 0; i < 7; i++){
-            for (int j = 0; j < 7; j++){
-                grid[i][j] = null;
-            }
-        }
+        //Sample initialization....
     }
-    public void initializeFromBoardString(String boardString){
+
+    /**
+     * Places a rug on the board
+     *
+     * @param rug The rug to place on the board.
+     */
+    public void placeRug(Rug rug){
 
     }
     //other board play methods like check the rugs place is valid or not...

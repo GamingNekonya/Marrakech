@@ -13,9 +13,9 @@ public class Rug {
     //initialized the rug's priorities
 
     /**
-     * Constructs a new rug based on a
+     * Constructs a new rug based on rug string.
      *
-     * @param rugString
+     * @param rugString The string representing the rug's details.
      */
     public Rug(String rugString){
 
