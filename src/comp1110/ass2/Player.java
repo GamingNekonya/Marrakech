@@ -5,14 +5,31 @@ package comp1110.ass2;
  * rugs, and game status
  */
 public class Player {
-    //player's color.
-    private char color;
-    //The number of dirhams the player has
+    /**
+     * Player colors enumeration.
+     */
+    public enum Color{
+        CYAN, YELLOW, RED, PURPLE
+    }
+
+    /**
+     * Player's color.
+     */
+    private Color color;
+    /**
+     * The number of dirhanms the player currently possesses.
+     */
     private int dirhams;
-    //The number of rugs the player has.
+    /**
+     * The number of rugs the player has left to place.
+     */
     private int rugsRemaining;
     //The player's status ( 'i' for in, 'o' for out).
     private char status;
+    /**
+     * Constructors, getters, setters and other methods...
+     */
+    private boolean isActive;
 
     /**
      * Constructs a new player based on a player string.
