@@ -28,36 +28,28 @@ public class Marrakech {
         }
 
         char color = rug.charAt(0);
-        if (!"cyrp".contains(String.valueOf(color))) {
-            return false;
-        }
-
-        int id;
-        try {
-            id = Integer.parseInt(rug.substring(1, 3));
-        } catch (NumberFormatException e) {
-            return false;
-        }
-
+        String id = rug.substring(1, 3);
         int x1 = Character.getNumericValue(rug.charAt(3));
         int y1 = Character.getNumericValue(rug.charAt(4));
         int x2 = Character.getNumericValue(rug.charAt(5));
         int y2 = Character.getNumericValue(rug.charAt(6));
 
-        if (!isValidCoordinate(x1, y1) || !isValidCoordinate(x2, y2)) {
+        if (x1 > 6 || y1 > 6 || x2 > 6 || y2 > 6) {
             return false;
         }
 
-        String rugSearchPattern = color + rug.substring(1, 3);
-        if (gameString.contains(rugSearchPattern)) {
+        if (!gameString.contains("P" + color)) {
+            return false;
+        }
+
+        String boardString = gameString.split("A")[1].substring(2);
+
+        if (boardString.contains(color + id)) {
             return false;
         }
 
         return true;
-        }
-        private static boolean isValidCoordinate(int x, int y) {
-            return x >= 0 && x <= 6 && y >= 0 && y <= 6;
-        }
+    }
 
     /**
      * Roll the special Marrakech die and return the result.
