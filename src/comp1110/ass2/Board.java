@@ -41,26 +41,6 @@ public class Board {
         }
     }
 
-    /**
-     * Places a rug on the board
-     *
-     * @param rug The rug to place on the board.
-     */
-    public void placeRugBoard(String rug){
-        char color = rug.charAt(0);
-        int colorCode = getColorCode(color);
-        int x1 = Character.getNumericValue(rug.charAt(4));
-        int y1 = Character.getNumericValue(rug.charAt(5));
-        int x2 = Character.getNumericValue(rug.charAt(6));
-        int y2 = Character.getNumericValue(rug.charAt(7));
-        if (isValidPosition(x1,y1)&& isValidPosition(x2,y2)){
-            rugBoard[x1][y1] = colorCode;
-            rugBoard[x2][y2] = colorCode;
-        }
-        else{
-            System.out.println("Invalid rug position!");
-        }
-    }
     //other board play methods like check the rugs place is valid or not...
     //other methods should be here...
 

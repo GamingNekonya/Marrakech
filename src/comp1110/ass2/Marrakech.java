@@ -23,9 +23,41 @@ public class Marrakech {
      * @return true if the rug is valid, and false otherwise.
      */
     public static boolean isRugValid(String gameString, String rug) {
-        // FIXME: Task 4
-        return false;
-    }
+        if (rug.length() != 7) {
+            return false;
+        }
+
+        char color = rug.charAt(0);
+        if (!"cyrp".contains(String.valueOf(color))) {
+            return false;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(rug.substring(1, 3));
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        int x1 = Character.getNumericValue(rug.charAt(3));
+        int y1 = Character.getNumericValue(rug.charAt(4));
+        int x2 = Character.getNumericValue(rug.charAt(5));
+        int y2 = Character.getNumericValue(rug.charAt(6));
+
+        if (!isValidCoordinate(x1, y1) || !isValidCoordinate(x2, y2)) {
+            return false;
+        }
+
+        String rugSearchPattern = color + rug.substring(1, 3);
+        if (gameString.contains(rugSearchPattern)) {
+            return false;
+        }
+
+        return true;
+        }
+        private static boolean isValidCoordinate(int x, int y) {
+            return x >= 0 && x <= 6 && y >= 0 && y <= 6;
+        }
 
     /**
      * Roll the special Marrakech die and return the result.
