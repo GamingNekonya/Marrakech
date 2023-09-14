@@ -46,7 +46,7 @@ public class Board {
      *
      * @param rug The rug to place on the board.
      */
-    public void placeRug(Rug rug){
+    public void placeRug(int[] rug){
 
     }
     //other board play methods like check the rugs place is valid or not...
