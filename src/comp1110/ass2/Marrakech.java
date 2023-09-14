@@ -1,5 +1,5 @@
 package comp1110.ass2;
-
+import java.util.Random;
 public class Marrakech {
 
     /**
@@ -42,8 +42,11 @@ public class Marrakech {
      * @return The result of the roll of the die meeting the criteria above
      */
     public static int rollDie() {
-        // FIXME: Task 6
-        return -1;
+        int[] die = {1,2,2,3,3,4};
+        Random random =new Random();
+        int randomIndex = random.nextInt(6);
+        int randomNum = die[randomIndex];
+        return randomNum;
     }
 
     /**
