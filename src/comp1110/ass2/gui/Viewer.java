@@ -96,7 +96,7 @@ public class Viewer extends Application {
                         cellColor = Color.PURPLE;
                         break;
                     default: // no rug
-                        cellColor = Color.YELLOW;
+                        cellColor = Color.GRAY;
                         break;
                 }
 
