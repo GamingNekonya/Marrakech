@@ -1,4 +1,5 @@
 package comp1110.ass2;
+import java.util.HashSet;
 import java.util.Random;
 public class Marrakech {
 
@@ -23,12 +24,24 @@ public class Marrakech {
      * @return true if the rug is valid, and false otherwise.
      */
     public static boolean isRugValid(String gameString, String rug) {
-        if (rug.length() != 7) {
+        // (1)Check if the String is 7 Characters long
+        if (rug.length() !=7) {
+            return false;
+        }
+        // (2)Check first char: Use charAt method find the color and then compare it with players
+        char rugColor= rug.charAt(0);
+        if (rugColor != 'c' && rugColor != 'y' && rugColor != 'r' && rugColor != 'p' ){
             return false;
         }
 
-        char color = rug.charAt(0);
-        String id = rug.substring(1, 3);
+        // (3)Check id: Translate the string into integer to guarantee the placed rug starts with 00.
+        String rugId = rug.substring(1, 3);
+        int idInt= Integer.parseInt(rugId);
+        if (idInt<0){
+            return false;
+        }
+
+        // (4)Check coordinates: Translate each char into integer to guarantee location are in the board(7*7)
         int x1 = Character.getNumericValue(rug.charAt(3));
         int y1 = Character.getNumericValue(rug.charAt(4));
         int x2 = Character.getNumericValue(rug.charAt(5));
@@ -38,17 +51,28 @@ public class Marrakech {
             return false;
         }
 
-        if (!gameString.contains("P" + color)) {
+        // (5)Check unique: if there already exist a combination of color+id, return false. Otherwise, add it ino the hashset.
+        HashSet<String> uniqueCombo = new HashSet<String>();
+        String combo = rugColor + rugId;
+        if (uniqueCombo.contains(combo)){
+            return false;
+        }else{
+            uniqueCombo.add(combo);
+        }
+
+        // (6)Check gameString: contains p+Assume+board
+        // player String:
+        if (!gameString.contains("P" + rugColor)) {
             return false;
         }
 
         String boardString = gameString.split("A")[1].substring(2);
-
-        if (boardString.contains(color + id)) {
+        if (boardString.contains(rugColor + rugId)) {
             return false;
         }
 
         return true;
+
     }
 
     /**
