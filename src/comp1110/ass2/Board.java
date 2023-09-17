@@ -44,7 +44,7 @@ public class Board {
     //other board play methods like check the rugs place is valid or not...
     //other methods should be here...
 
-    private int getColorCode(char color){
+    public int getColorCode(char color){
         switch (color){
             case 'c' : return 1;
             case 'y' : return 2;
