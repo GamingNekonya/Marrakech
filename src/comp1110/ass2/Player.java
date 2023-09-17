@@ -8,47 +8,67 @@ public class Player {
     /**
      * Player colors enumeration.
      */
-    public enum Color{
-        CYAN, YELLOW, RED, PURPLE
+    private char color;
+    private int dirhams;
+    private int rugs;
+    private boolean inGame;
+
+    public Player(String playerString) {
+        this.color = playerString.charAt(1);
+        this.dirhams = Integer.parseInt(playerString.substring(2, 5));
+        this.rugs = Integer.parseInt(playerString.substring(5, 7));
+        this.inGame = playerString.charAt(7) == 'i';
     }
 
     /**
      * Player's color.
      */
-    private Color color;
+    public char getColor() {
+        return color;
+    }
+
     /**
      * The number of dirhanms the player currently possesses.
      */
-    private int dirhams;
+    public int getDirhams() {
+        return dirhams;
+    }
+
     /**
      * The number of rugs the player has left to place.
      */
-    private int rugsRemaining;
+    public int getRugs() {
+        return rugs;
+    }
     //The player's status ( 'i' for in, 'o' for out).
-    private char status;
+
     /**
      * Constructors, getters, setters and other methods...
      */
-    private boolean isActive;
+    public boolean isInGame() {
+        return inGame;
+    }
 
     /**
      * Constructs a new player based on a player string.
      *
      * @param playerString The string representing the player's details.
      */
-    public Player (String playerString){
-        //Sample initialization...
-    }
 
     /**
      * Transfers dirhams from this player to another.
      *
      * @param receiver The player receiving the dirhams.
-     * @param amount The amount of dirhams to transfer.
+     * @param amount   The amount of dirhams to transfer.
      */
 
-    public void pay(Player receiver, int amount){
-        //Sample implementation...
+    public void pay(Player receiver, int amount) {
+        if (this.dirhams >= amount) {
+            this.dirhams -= amount;
+            receiver.dirhams += amount;
+        } else {
+            System.out.println("Not enough dirhams!");
+        }
     }
 
     /**
@@ -56,7 +76,5 @@ public class Player {
      *
      * @return True if the player is out, false otherwise.
      */
-    public boolean isOut(){
-        return this.status == 'o';
-    }
+
 }

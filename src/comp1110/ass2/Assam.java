@@ -15,8 +15,31 @@ public class Assam {
      *
      * @param assamString The string representing Assam's position and orientation
      */
-    public Assam(String assamString){
+    public Assam(String assamString) {
+        if (assamString == null || assamString.length() < 4) {
+            System.out.println("Invalid Assam string!");
+            return;
+        }
+        char possibleOrientation = assamString.charAt(3);
+        if ("NESW".indexOf(possibleOrientation) == -1) {
+            System.out.println("Invalid orientation!");
+            return;
+        }
 
+        this.x = Character.getNumericValue(assamString.charAt(1));
+        this.y = Character.getNumericValue(assamString.charAt(2));
+        this.orientation = assamString.charAt(3);
+    }
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public char getOrientation() {
+        return orientation;
     }
     //methods of move Assam should be here...
 }
