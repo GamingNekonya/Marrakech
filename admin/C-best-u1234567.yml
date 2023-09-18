@@ -32,9 +32,6 @@ declaration: >-
 # I wish to submit the following classes as entirely my own (remove this if
 # you want to just submit methods):
 class: public class Player {
-  /**
-  * Player colors enumeration.
-  */
   private char color;
   private int dirhams;
   private int rugs;
@@ -46,8 +43,6 @@ class: public class Player {
   this.rugs = Integer.parseInt(playerString.substring(5, 7));
   this.inGame = playerString.charAt(7) == 'i';
   }
-   - 
-   - 
 
 # I wish to submit the following methods as entirely my own (remove this if
 # you want to just submit classes):
