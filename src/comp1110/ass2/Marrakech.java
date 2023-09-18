@@ -88,7 +88,9 @@ public class Marrakech {
      * being twice as likely to be returned as a 1 or 4.
      * @return The result of the roll of the die meeting the criteria above
      */
+
     public static int rollDie() {
+        //make a die with six side but only have value1-4
         int[] die = {1,2,2,3,3,4};
         Random random =new Random();
         int randomIndex = random.nextInt(6);
