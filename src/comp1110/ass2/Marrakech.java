@@ -51,14 +51,6 @@ public class Marrakech {
             return false;
         }
 
-        // (5)Check unique: if there already exist a combination of color+id, return false.
-        String cID= rug.substring(0,3);
-        char checkColor= cID.charAt(0);
-        String checkID = cID.substring(1,3);
-        if(checkColor==rugColor && checkID.equals(rugId)){
-            return  false;
-        }
-
         // (6)Check gameString: contains p+Assume+board
         // player String:
         if (!gameString.contains("P" + rugColor)) {
