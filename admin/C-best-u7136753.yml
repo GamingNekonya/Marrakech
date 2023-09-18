@@ -31,18 +31,7 @@ declaration: >-
 
 # I wish to submit the following classes as entirely my own (remove this if
 # you want to just submit methods):
-class: public class Player {
-  private char color;
-  private int dirhams;
-  private int rugs;
-  private boolean inGame;
-  
-  public Player(String playerString) {
-  this.color = playerString.charAt(1);
-  this.dirhams = Integer.parseInt(playerString.substring(2, 5));
-  this.rugs = Integer.parseInt(playerString.substring(5, 7));
-  this.inGame = playerString.charAt(7) == 'i';
-  }
+class: [Player]
 
 # I wish to submit the following methods as entirely my own (remove this if
 # you want to just submit classes):
