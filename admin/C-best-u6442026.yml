@@ -4,7 +4,7 @@
 # This is your statement of your submitted work being your own.
 # Incorrectly filling out this statement could lead to charges
 # of academic misconduct.
-# 
+#
 # For information on how to fill this out correctly, see
 # https://cs.anu.edu.au/courses/comp1110/help/faq/09-originality/
 #
@@ -18,9 +18,7 @@ declaration: >-
 #
 # Add as many "name+comment" entries as necessary
 # (or remove it altogether if you haven't collaborated with anyone)
-collaboration:
-  - name:
-    comment: >-
+
 
 # Use this to list any code that you used that you did not write,
 # aside from code provided by the lecturer.  Provide a comment
@@ -29,23 +27,16 @@ collaboration:
 #
 # Add as many "url+licence+comment" entries as necessary
 # (or remove it altogether if you haven't used any external code)
-code:
-  - comment:
-    url:
-    licence:
+
 
 # I wish to submit the following classes as entirely my own (remove this if
 # you want to just submit methods):
-class:
-   - 
-   - 
+class: [Viewer]
 
 # I wish to submit the following methods as entirely my own (remove this if
 # you want to just submit classes):
-method:
-   - 
-   - 
+
 
 # sign *your* name and uid here
-name:
-uid:
+name: Qihang Xu
+uid: u6442026

@@ -51,14 +51,6 @@ public class Marrakech {
             return false;
         }
 
-        // (5)Check unique: if there already exist a combination of color+id, return false.
-        String cID= rug.substring(0,3);
-        char checkColor= cID.charAt(0);
-        String checkID = cID.substring(1,3);
-        if(checkColor==rugColor && checkID.equals(rugId)){
-            return  false;
-        }
-
         // (6)Check gameString: contains p+Assume+board
         // player String:
         if (!gameString.contains("P" + rugColor)) {
@@ -88,7 +80,9 @@ public class Marrakech {
      * being twice as likely to be returned as a 1 or 4.
      * @return The result of the roll of the die meeting the criteria above
      */
+
     public static int rollDie() {
+        //make a die with six side but only have value1-4
         int[] die = {1,2,2,3,3,4};
         Random random =new Random();
         int randomIndex = random.nextInt(6);
