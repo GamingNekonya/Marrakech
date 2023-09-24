@@ -41,5 +41,5 @@ public class Assam {
     public char getOrientation() {
         return orientation;
     }
-    //methods of move Assam should be here...
+    //We assume assam will start at the center of the board(3,3)
 }
