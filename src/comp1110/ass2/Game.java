@@ -24,9 +24,9 @@ public class Game extends Application {
                 Rectangle rec = new Rectangle(recSize, recSize);
                 if ((r + c) / 2 == 0) {
                     rec.setFill(Color.GOLDENROD);
-                } else  {
+                }
+                else  {
                     rec.setFill(Color.GOLDENROD);
-
                 }
                 pane.add(rec, r, c);
             }
