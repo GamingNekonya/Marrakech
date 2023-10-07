@@ -118,10 +118,4 @@ public class Player {
         }
     }
 
-    /**
-     * Checks if this player is out of game.
-     *
-     * @return True if the player is out, false otherwise.
-     */
-
 }

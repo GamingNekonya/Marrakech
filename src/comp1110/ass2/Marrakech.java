@@ -182,13 +182,70 @@ public class Marrakech {
      * @param dieResult The result of the die, which determines the number of squares Assam will move.
      * @return A String representing Assam's state after the movement.
      */
-    public static String moveAssam(String currentAssam, int dieResult){
+    public static String moveAssam(String currentAssam, int dieResult) {
         int x = Character.getNumericValue(currentAssam.charAt(1));
         int y = Character.getNumericValue(currentAssam.charAt(2));
-        char orientation = currentAssam.charAt(3);
-        Assam assam = new Assam(x, y, orientation);
-        assam.move(dieResult);
-        return "A" + assam.getX() + assam.getY() + assam.getOrientation();
+        char direction = currentAssam.charAt(3);
+
+        // Calculate new position based on direction and dieResult
+        switch (direction) {
+            case 'N': y -= dieResult; break;
+            case 'S': y += dieResult; break;
+            case 'E': x += dieResult; break;
+            case 'W': x -= dieResult; break;
+        }
+
+        int remainingSteps = 0; // Additional steps after reaching boundary
+
+        // Check if Assam is out of bounds and adjust position and direction accordingly
+        if (x < 0 || x > 6 || y < 0 || y > 6) {
+            // Calculate steps needed to reach the boundary and the remaining steps
+            if (x < 0) {
+                remainingSteps = -x;
+                x = 0;
+            } else if (x > 6) {
+                remainingSteps = x - 6;
+                x = 6;
+            } else if (y < 0) {
+                remainingSteps = -y;
+                y = 0;
+            } else if (y > 6) {
+                remainingSteps = y - 6;
+                y = 6;
+            }
+
+            // Special corner cases
+            if (x == 0 && y == 6) {
+                direction = (direction == 'W') ? 'N' : 'E';
+                remainingSteps -= 1;
+            } else if (x == 6 && y == 0) {
+                direction = (direction == 'N') ? 'W' : 'S';
+                remainingSteps -= 1;
+            } else {
+                // General boundary case: reverse direction and adjust x or y based on parity
+                switch (direction) {
+                    case 'N': direction = 'S'; x = (x % 2 == 0) ? x + 1 : x - 1; break;
+                    case 'S': direction = 'N'; x = (x % 2 == 0) ? x - 1 : x + 1; break;
+                    case 'E': direction = 'W'; y = (y % 2 == 0) ? y - 1 : y + 1; break;
+                    case 'W': direction = 'E'; y = (y % 2 == 0) ? y + 1 : y - 1; break;
+                }
+                remainingSteps -= 1;
+            }
+
+            // Move Assam the remaining steps in the new direction
+            switch (direction) {
+                case 'N': y -= remainingSteps; break;
+                case 'S': y += remainingSteps; break;
+                case 'E': x += remainingSteps; break;
+                case 'W': x -= remainingSteps; break;
+            }
+
+            // Final position adjustment in case it's still out of bounds
+            x = Math.max(0, Math.min(x, 6));
+            y = Math.max(0, Math.min(y, 6));
+        }
+
+        return "A" + x + y + direction;
     }
 
     /**
