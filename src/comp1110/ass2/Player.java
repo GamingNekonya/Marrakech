@@ -19,6 +19,13 @@ public class Player {
         this.rugs = rugs;
         this.isInGame = isInGame;
     }
+    public Player() {
+        this.dirhams = 30;
+        this.rugs = 15;
+        this.isInGame = true;
+        // default color, can be changed later if needed
+        this.color = 'c';
+    }
 
     // Constructor to create a Player object from a string
     public Player(String playerString) {
@@ -42,6 +49,9 @@ public class Player {
         return "P" + color + dirhamString + rugString +inGameChar;
     }
     public void setColor(char color) {
+        if ("cyrp".indexOf(color) == -1) {
+            throw new IllegalArgumentException("Invalid color character");
+        }
         this.color = color;
     }
 
