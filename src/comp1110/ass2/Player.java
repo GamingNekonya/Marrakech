@@ -11,13 +11,50 @@ public class Player {
     private char color;
     private int dirhams;
     private int rugs;
-    private boolean inGame;
+    private boolean isInGame;
 
+    public Player(char color, int dirhams, int rugs, boolean isInGame) {
+        this.color = color;
+        this.dirhams = dirhams;
+        this.rugs = rugs;
+        this.isInGame = isInGame;
+    }
+
+    // Constructor to create a Player object from a string
     public Player(String playerString) {
-        this.color = playerString.charAt(1);
-        this.dirhams = Integer.parseInt(playerString.substring(2, 5));
-        this.rugs = Integer.parseInt(playerString.substring(5, 7));
-        this.inGame = playerString.charAt(7) == 'i';
+        if (playerString == null || playerString.length() != 8) {
+            throw new IllegalArgumentException("Invalid player string");
+        }
+        color = playerString.charAt(1);
+        if ("cyrp".indexOf(color) == -1) {
+            throw new IllegalArgumentException("Invalid color character");
+        }
+        dirhams = Integer.parseInt(playerString.substring(2, 5));
+        rugs = Integer.parseInt(playerString.substring(5, 7));
+        isInGame = playerString.charAt(7) == 'i';
+    }
+
+    public String toPlayerString(){
+        String dirhamString = String.format("%03d", dirhams);
+        String rugString = String.format("%02d", rugs);
+        char inGameChar = isInGame ? 'i' : 'o';
+
+        return "P" + color + dirhamString + rugString +inGameChar;
+    }
+    public void setColor(char color) {
+        this.color = color;
+    }
+
+    public void setDirhams(int dirhams) {
+        this.dirhams = dirhams;
+    }
+
+    public void setRugs(int rugs) {
+        this.rugs = rugs;
+    }
+
+    public void setInGame(boolean inGame) {
+        isInGame = inGame;
     }
 
     /**
@@ -46,7 +83,7 @@ public class Player {
      * Constructors, getters, setters and other methods...
      */
     public boolean isInGame() {
-        return inGame;
+        return isInGame;
     }
 
     /**
