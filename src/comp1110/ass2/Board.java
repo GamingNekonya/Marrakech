@@ -1,87 +1,106 @@
 package comp1110.ass2;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Represents the game board of Marrakech.
  */
 public class Board {
-    private Position assamPosition;
-    private int[][] rugBoard;
-    private static final int BOARD_SIZE = 7;
+    private String[][] grid;  // Holds abbreviated rug strings
+    /**
+     * Creates a new 7x7 game board.
+     */
+    private static final int SIZE = 7;
     //2D array representing the board.
-    private List<Rug> rugsOnBoard = new ArrayList<>();
 
     /**
      * Constructor to initialize the game board.
      */
+
     public Board() {
-        this(""); // call the other constructor with an empty boardString
+        grid = new String[SIZE][SIZE];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                grid[i][j] = "n00";  // Empty spot
+            }
+        }
     }
 
-    public Board(String boardString) {
-        assamPosition = new Position(4, 4, 'S');
-        rugBoard = new int[BOARD_SIZE][BOARD_SIZE];
-        if (boardString.isEmpty()) {
-            initRugBoard();
+    /**
+     * Initializes the board using a formatted string.
+     *
+     * @param boardStr The board string, which should start with 'B' and followed by 147 characters
+     *                 representing the board state.
+     */
+    public Board(String boardStr) {
+        if (boardStr == null || boardStr.length() != 148 || boardStr.charAt(0) != 'B') {
+            throw new IllegalArgumentException("Invalid board string");
+        }
+        grid = new String[SIZE][SIZE];
+        int strIndex = 1;
+        for (int col = 0; col < SIZE; col++) {
+            for (int row = 0; row < SIZE; row++) {
+                grid[row][col] = boardStr.substring(strIndex, strIndex + 3);
+                strIndex += 3;
+            }
+        }
+    }
+    /**
+     * Convert the board state into a board string following the rules given.
+     *
+     * @return the board string representing the current state of the board
+     */
+    public String toBoardString() {
+        StringBuilder boardString = new StringBuilder("B");
+        for (int col = 0; col < SIZE; col++) {
+            for (int row = 0; row < SIZE; row++) {
+                boardString.append(grid[row][col]);
+            }
+        }
+        return boardString.toString();
+    }
+
+    /**
+     * Places a rug string at the specified position on the board.
+     *
+     * @param rugString the abbreviated rug string to be placed
+     * @param row       the row index of the position
+     * @param col       the column index of the position
+     */
+    public void placeRug(String rugString, int row, int col) {
+        if (row >= 0 && row < SIZE && col >= 0 && col < SIZE) {
+            grid[row][col] = rugString;
         } else {
-            parseBoardString(boardString);
+            throw new IllegalArgumentException("Invalid position");
         }
     }
 
-    private void initRugBoard() {
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                rugBoard[i][j] = 0;
-            }
+    /**
+     * Retrieve the color code at a specified position on the board.
+     * <p>
+     * The method retrieves the first character of the rug string at the
+     * specified coordinates and returns a corresponding color code.
+     * <ul>
+     *     <li>1: Cyan ('c')</li>
+     *     <li>2: Yellow ('y')</li>
+     *     <li>3: Red ('r')</li>
+     *     <li>4: Purple ('p')</li>
+     *     <li>0: No Rug ('n')</li>
+     * </ul>
+     * It's expected that a calling method will map these codes to actual
+     * color values for the purpose of rendering the board.
+     *
+     * @param x The x-coordinate of the cell.
+     * @param y The y-coordinate of the cell.
+     * @return An integer representing the color code at the specified coordinates.
+     * @throws IllegalArgumentException if x or y are out of the board bounds.
+     * @throws IllegalStateException    if the color character is unrecognized.
+     */
+    public int getColorAt(int x, int y) {
+        if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) {
+            throw new IllegalArgumentException("Invalid coordinates");
         }
-    }
-
-    public void placeRug(Rug rug) {
-        rugsOnBoard.add(rug);
-
-        // Update the rugBoard using the positions from the Rug instance.
-        // This assumes you want to use the Rug's ID as an identifier in the rugBoard.
-        rugBoard[rug.getX1()][rug.getY1()] = rug.getId();
-        rugBoard[rug.getX2()][rug.getY2()] = rug.getId();
-    }
-
-
-    private void parseBoardString(String boardString) {
-        int expectedLength = BOARD_SIZE * BOARD_SIZE * 3 + 1;
-
-        if (boardString == null || boardString.length() != expectedLength) {
-            throw new IllegalArgumentException("Invalid board string format. Expected length: " + expectedLength + ", but got: " + (boardString == null ? "null" : boardString.length()));
-        }
-
-        if (boardString.charAt(0) != 'B') {
-            throw new IllegalArgumentException("Invalid board string format: does not start with 'B'");
-        }
-
-        for (int row = 0; row < BOARD_SIZE; row++) {
-            for (int col = 0; col < BOARD_SIZE; col++) {
-                int index = 1 + (row * BOARD_SIZE + col) * 3;
-                String rugSubString = boardString.substring(index, index + 3);
-
-                if (rugSubString.equals("n00")) {
-                    rugBoard[row][col] = 0;
-                } else {
-                    int colorCode = getColorCode(rugSubString.charAt(0));
-                    int id = Integer.parseInt(rugSubString.substring(1, 3));
-                    rugBoard[row][col] = colorCode * 100 + id;  // Using a composite number to represent both color and ID
-                }
-            }
-        }
-    }
-
-
-    //other board play methods like check the rugs place is valid or not...
-    //other methods should be here...
-
-    private int getColorCode(char color) {
-        switch (color) {
+        char colorChar = grid[x][y].charAt(0);
+        switch (colorChar) {
             case 'c':
                 return 1;
             case 'y':
@@ -90,46 +109,14 @@ public class Board {
                 return 3;
             case 'p':
                 return 4;
-            default:
+            case 'n':
                 return 0;
+            default:
+                throw new IllegalStateException("Unexpected color char: " + colorChar);
         }
     }
 
-    public int getColorAt(int row, int col) {
-        return rugBoard[row][col] / 100;  // To get only the color code
-    }
-
-    private boolean isValidPosition(int x, int y) {
-        return x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
-    }
-
-    public Position getAssamPosition() {
-        return assamPosition;
-    }
-
-    public static class Position {
-        int x;
-        int y;
-        char direction;
-
-
-        public Position(int x, int y, char direction) {
-            this.x = x;
-            this.y = y;
-            this.direction = direction;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public char getDirection() {
-            return direction;
-        }
+    public static int getSize() {
+        return SIZE;
     }
 }
-

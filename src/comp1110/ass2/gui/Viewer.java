@@ -46,8 +46,8 @@ public class Viewer extends Application {
         boardGroup.getChildren().clear();
         playerInfoGroup.getChildren().clear();
         String boardStr = state.substring(37);
-        String assamStr = state.substring(32, 37);
-        if (state == null || state.length() < 37) {
+        String assamStr = state.substring(32, 36);
+        if (state == null || state.length() < 36) {
             // handle the error: state string is not valid
             return;
         }
@@ -70,6 +70,7 @@ public class Viewer extends Application {
         root.getChildren().remove(playerInfoGroup);
         root.getChildren().addAll(boardGroup, playerInfoGroup);
         drawBoard();
+        System.out.println("Assam string: " + assamStr);
         displayAssam();
 
     }
