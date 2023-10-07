@@ -183,8 +183,12 @@ public class Marrakech {
      * @return A String representing Assam's state after the movement.
      */
     public static String moveAssam(String currentAssam, int dieResult){
-        // FIXME: Task 13
-        return "";
+        int x = Character.getNumericValue(currentAssam.charAt(1));
+        int y = Character.getNumericValue(currentAssam.charAt(2));
+        char orientation = currentAssam.charAt(3);
+        Assam assam = new Assam(x, y, orientation);
+        assam.move(dieResult);
+        return "A" + assam.getX() + assam.getY() + assam.getOrientation();
     }
 
     /**
