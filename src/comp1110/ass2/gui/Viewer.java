@@ -140,31 +140,6 @@ public class Viewer extends Application {
         boardGroup.getChildren().addAll(assamCircle, orientationLine);
     }
 
-    private void displayPlayerInfo(Player player, int index) {
-        double startX = 400;
-        double startY = 50 + index * 150;
-
-        Rectangle colorBox = new Rectangle(startX, startY, 40, 40);
-        switch (player.getColor()) {
-            case 'c': colorBox.setFill(Color.CYAN); break;
-            case 'y': colorBox.setFill(Color.YELLOW); break;
-            case 'r': colorBox.setFill(Color.RED); break;
-            case 'p': colorBox.setFill(Color.PURPLE); break;
-        }
-        Label dirhamsLabel = new Label("Dirhams: " + player.getDirhams());
-        dirhamsLabel.setLayoutX(startX + 50);
-        dirhamsLabel.setLayoutY(startY);
-
-        Label rugsLabel = new Label("Rugs: " + player.getRugs());
-        rugsLabel.setLayoutX(startX + 50);
-        rugsLabel.setLayoutY(startY + 25);
-
-        Label inGameLabel = new Label(player.isInGame() ? "In Game" : "Out of Game");
-        inGameLabel.setLayoutX(startX + 50);
-        inGameLabel.setLayoutY(startY + 50);
-
-        playerInfoGroup.getChildren().addAll(colorBox, dirhamsLabel, rugsLabel, inGameLabel);
-    }
 
 
     /**
