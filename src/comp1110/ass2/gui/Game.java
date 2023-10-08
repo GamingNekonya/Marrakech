@@ -1,19 +1,19 @@
 package comp1110.ass2.gui;
 
-import comp1110.ass2.Assam;
-import comp1110.ass2.Board;
-import comp1110.ass2.GameSet;
-import comp1110.ass2.Player;
+import comp1110.ass2.*;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Game extends Application {
@@ -69,6 +69,37 @@ public class Game extends Application {
         drawBoard();
         displayAssam();
 
+    }
+
+    /**
+     * Create controls for the game UI, adding functionality to interact with the game.
+     */
+    void makeControls() {
+        // Button to roll the die
+        Button rollDieBtn = new Button("Roll the Die");
+        // Text to display the result of the die roll
+        Text dieResultTxt = new Text("Die result will appear here");
+
+        /**
+         * Set an action on the button. When the button is clicked,
+         * the rollDie method is called, and the result is displayed
+         * in the dieResultTxt Text node.
+         */
+        rollDieBtn.setOnAction(e -> {
+            int dieResult = Marrakech.rollDie();
+            // Update the text to display the result of the die roll
+            dieResultTxt.setText("You rolled: " + dieResult);
+            // Add additional code here to update the game state and re-display
+            // using displayState(gameSet.getCurrentGameState());
+        });
+
+        // Add the button and text to a layout node and add to the controls group
+        HBox controlsBox = new HBox(10);  // 10 is the spacing between controls
+        controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt);
+        controlsBox.setLayoutX(VIEWER_WIDTH - 200);
+        controlsBox.setLayoutY(VIEWER_HEIGHT - 50);
+
+        controls.getChildren().add(controlsBox);
     }
 
     private void drawBoard() {
@@ -167,9 +198,9 @@ public class Game extends Application {
         primaryStage.setTitle("Marrakech Viewer");
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
 
+        makeControls();  // Create the controls
         root.getChildren().add(controls);
         displayState(gameSet.getCurrentGameState());
-
 
         primaryStage.setScene(scene);
         primaryStage.show();
