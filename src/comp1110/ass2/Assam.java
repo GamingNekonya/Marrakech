@@ -56,8 +56,7 @@ public class Assam {
     }
 
 
-    @Override
-    public String toString() {
+    public String toAssamString() {
         return "A" + x + y + orientation;
     }
 
