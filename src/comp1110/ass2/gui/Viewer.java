@@ -2,6 +2,7 @@ package comp1110.ass2.gui;
 
 import comp1110.ass2.Assam;
 import comp1110.ass2.Board;
+import comp1110.ass2.GameSet;
 import comp1110.ass2.Player;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -35,6 +36,7 @@ public class Viewer extends Application {
     private TextField boardTextField;
     private Assam assam;
     private Board board;
+    private GameSet gameSet = new GameSet();
 
 
     /**
@@ -70,7 +72,6 @@ public class Viewer extends Application {
         root.getChildren().remove(playerInfoGroup);
         root.getChildren().addAll(boardGroup, playerInfoGroup);
         drawBoard();
-        System.out.println("Assam string: " + assamStr);
         displayAssam();
 
     }
@@ -179,12 +180,16 @@ public class Viewer extends Application {
             }
         });
         HBox hb = new HBox();
-        hb.getChildren().addAll(boardLabel,
-                boardTextField, button);
+        hb.getChildren().addAll(boardLabel, boardTextField, button);
         hb.setSpacing(10);
         hb.setLayoutX(50);
         hb.setLayoutY(VIEWER_HEIGHT - 50);
         controls.getChildren().add(hb);
+    }
+
+    public void updateViewState() {
+        String gameString = gameSet.getCurrentGameState();
+        displayState(gameString);
     }
 
     @Override

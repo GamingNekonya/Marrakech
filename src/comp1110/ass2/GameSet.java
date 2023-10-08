@@ -1,6 +1,6 @@
 package comp1110.ass2;
 
-public class Game {
+public class GameSet {
     private Assam assam;
     private Board board;
     private Player playerCyan;
@@ -10,7 +10,7 @@ public class Game {
 
     private Player currentPlayer;
 
-    public Game() {
+    public GameSet() {
         this.playerCyan = new Player();
         this.playerCyan.setColor('c');
 
@@ -105,7 +105,7 @@ public class Game {
      */
     public String getCurrentPlayerState() {
         // Concatenate the string representations of each player.
-        return playerCyan.toString() + playerYellow.toString() + playerRed.toString() + playerPurple.toString();
+        return playerCyan.toPlayerString() + playerYellow.toPlayerString() + playerRed.toPlayerString() + playerPurple.toPlayerString();
     }
 
     /**
@@ -114,6 +114,7 @@ public class Game {
      * @return A string representing the complete state of the game.
      */
     public String getCurrentGameState() {
+        System.out.println(getCurrentPlayerState() + getCurrentAssamState() + getCurrentBoardState());
         return getCurrentPlayerState() + getCurrentAssamState() + getCurrentBoardState();
     }
 
