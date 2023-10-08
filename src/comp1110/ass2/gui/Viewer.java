@@ -165,6 +165,8 @@ public class Viewer extends Application {
 
         playerInfoGroup.getChildren().addAll(colorBox, dirhamsLabel, rugsLabel, inGameLabel);
     }
+
+
     /**
      * Create a basic text field for input and a refresh button.
      */
@@ -187,10 +189,6 @@ public class Viewer extends Application {
         controls.getChildren().add(hb);
     }
 
-    public void updateViewState() {
-        String gameString = gameSet.getCurrentGameState();
-        displayState(gameString);
-    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
