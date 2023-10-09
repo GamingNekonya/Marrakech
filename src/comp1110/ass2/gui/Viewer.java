@@ -139,7 +139,8 @@ public class Viewer extends Application {
 
         boardGroup.getChildren().addAll(assamCircle, orientationLine);
     }
-
+    /** Add player information like rug amount, dirhams and current state beside the board.
+     */
     private void displayPlayerInfo(Player player, int index) {
         double startX = 400;
         double startY = 50 + index * 150;
