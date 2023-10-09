@@ -1,13 +1,13 @@
 ## Code Review
 
-Reviewed by: <Tianze Bai>, <u7136753>
+Reviewed by: Tianze Bai, u7136753
 
-Reviewing code written by: <Qihang Xu> <u6442026>
+Reviewing code written by: Qihang Xu u6442026
 
-Component: <Your partner's component here>
+Component: JavaFX, structure build
 
 ### Comments
 
-<You comment here!>
+perfect design, no bugs and no need to improve.
 
 
