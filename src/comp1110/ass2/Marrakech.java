@@ -122,7 +122,7 @@ public class Marrakech {
                 &&(player3Rugs ==0 || player3State=='o')
                 &&(player4Rugs ==0 || player4State=='o');
 
-        if (ifGameOver) {
+        if(ifGameOver) {
             return true;
         }
         return false;
@@ -144,7 +144,24 @@ public class Marrakech {
      */
     public static String rotateAssam(String currentAssam, int rotation) {
         // FIXME: Task 9
-        return "";
+        //Get current orientation
+        char currentFacing = currentAssam.charAt(3);
+
+
+        int facing= "NESW".indexOf(currentFacing);
+        if (rotation == 0) {
+            return currentAssam;
+        }
+        else if (rotation == 90) {
+            facing = (facing+ 1) % 4;
+        } else if (rotation == 270) {
+            facing = (facing + 3) % 4;
+        }
+
+       //identify new facing and build new AssamString
+        char newFacing = "NESW".charAt(facing);
+        String newAssamString = "A" + currentAssam.substring(1, 3) + newFacing;
+        return newAssamString;
     }
 
     /**
