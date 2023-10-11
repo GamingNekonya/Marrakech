@@ -99,9 +99,35 @@ public class Marrakech {
      * @return true if the game is over, or false otherwise.
      */
     public static boolean isGameOver(String currentGame) {
-        // FIXME: Task 8
+
+        // split currentGame String into four player string:
+        String player1String = currentGame.substring(0, 8); // Assuming each player state is 8 characters.
+        String player2String = currentGame.substring(8, 16); // Assuming Assam state is 4 characters.
+        String player3String = currentGame.substring(16, 24);
+        String player4String = currentGame.substring(24, 32);
+
+        // get each player's rugID and status(in or out of game)
+        int player1Rugs  = Integer.parseInt(player1String.substring(5, 7));
+        char player1State = player1String.charAt(7);
+        int player2Rugs = Integer.parseInt(player2String.substring(5, 7));
+        char player2State = player2String.charAt(7);
+        int player3Rugs = Integer.parseInt(player3String.substring(5, 7));
+        char player3State = player3String.charAt(7);
+        int player4Rugs = Integer.parseInt(player4String.substring(5, 7));
+        char player4State = player4String.charAt(7);
+
+        // if all turn player have no rugs or is out of game, the game is over.
+        boolean ifGameOver = (player1Rugs ==0 || player1State=='o')
+                &&(player2Rugs ==0 || player2State=='o')
+                &&(player3Rugs ==0 || player3State=='o')
+                &&(player4Rugs ==0 || player4State=='o');
+
+        if (ifGameOver) {
+            return true;
+        }
         return false;
     }
+
 
     /**
      * Implement Assam's rotation.
