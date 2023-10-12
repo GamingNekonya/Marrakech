@@ -147,7 +147,6 @@ public class Marrakech {
         //Get current orientation
         char currentFacing = currentAssam.charAt(3);
 
-
         int facing= "NESW".indexOf(currentFacing);
         if (rotation == 0) {
             return currentAssam;
@@ -177,7 +176,37 @@ public class Marrakech {
      */
     public static boolean isPlacementValid(String gameState, String rug) {
         // FIXME: Task 10
-        return false;
+        // find each subString:
+        int indexOfBoard = gameState.indexOf('B');
+        String boardSubstring = gameState.substring(indexOfBoard);
+
+        String assamString = gameState.substring(32,36);
+        String[] playerStrings = gameState.substring(1, 32).split("P");
+
+        // Extract Assam's position and orientation if available
+        int assamX = Character.getNumericValue(assamString.charAt(1));
+        int assamY = Character.getNumericValue(assamString.charAt(2));
+
+
+        // Extract the position of the potential rug
+        int rugX1 = Character.getNumericValue(rug.charAt(3));
+        int rugY1 = Character.getNumericValue(rug.charAt(4));
+        int rugX2 = Character.getNumericValue(rug.charAt(5));
+        int rugY2 = Character.getNumericValue(rug.charAt(6));
+
+        // Check if the rug is adjacent to Assam (not counting diagonals)
+        int deltaX1 = Math.abs(rugX1 - assamX);
+        int deltaY1 = Math.abs(rugY1 - assamY);
+        int deltaX2 = Math.abs(rugX2 - assamX);
+        int deltaY2 = Math.abs(rugY2 - assamY);
+
+        if (deltaX1 + deltaY1 ==1 || deltaX2 + deltaY2 ==1 ){
+            return true;
+        }else {
+            return false;
+        }
+
+
     }
 
     /**
