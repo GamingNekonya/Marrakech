@@ -209,11 +209,12 @@ public class Marrakech {
 
         if (rugNotOnAssam && nextAssam) {
             if (!boardRug1.equals("n00") || !boardRug2.equals("n00")) {
-                boolean sameBoardRug = !boardRug1.equals(boardRug2);
-                return sameBoardRug;
+                boolean sameRugID = !boardRug1.equals(boardRug2);
+                return sameRugID;
             }
             return true;
         }
+
         return false;
     }
 
