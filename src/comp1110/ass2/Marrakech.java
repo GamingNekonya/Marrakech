@@ -176,37 +176,45 @@ public class Marrakech {
      */
     public static boolean isPlacementValid(String gameState, String rug) {
         // FIXME: Task 10
-        // find each subString:
-        int indexOfBoard = gameState.indexOf('B');
-        String boardSubstring = gameState.substring(indexOfBoard);
+       //Find String of Assam and Board:
+        String assamString = gameState.substring(32, 36);
 
-        String assamString = gameState.substring(32,36);
-        String[] playerStrings = gameState.substring(1, 32).split("P");
+        int indexOfBoard = gameState.indexOf('B');
+        String boardString = gameState.substring(indexOfBoard);
 
         // Extract Assam's position and orientation if available
         int assamX = Character.getNumericValue(assamString.charAt(1));
         int assamY = Character.getNumericValue(assamString.charAt(2));
 
-
-        // Extract the position of the potential rug
+        // Extract the position of the expected rug
         int rugX1 = Character.getNumericValue(rug.charAt(3));
         int rugY1 = Character.getNumericValue(rug.charAt(4));
         int rugX2 = Character.getNumericValue(rug.charAt(5));
         int rugY2 = Character.getNumericValue(rug.charAt(6));
 
-        // Check if the rug is adjacent to Assam (not counting diagonals)
-        int deltaX1 = Math.abs(rugX1 - assamX);
-        int deltaY1 = Math.abs(rugY1 - assamY);
-        int deltaX2 = Math.abs(rugX2 - assamX);
-        int deltaY2 = Math.abs(rugY2 - assamY);
+        // use absolute value to describe location of rug and assam:
+        int absX1 = Math.abs(rugX1 - assamX);
+        int absY1 = Math.abs(rugY1 - assamY);
+        int absX2 = Math.abs(rugX2 - assamX);
+        int absY2 = Math.abs(rugY2 - assamY);
 
-        if (deltaX1 + deltaY1 ==1 || deltaX2 + deltaY2 ==1 ){
+        //Check if rug will place on Assam and whether it is next to Assam.
+        boolean rugNotOnAssam = (rugX1 != assamX || rugY1 != assamY) && (rugX2 != assamX || rugY2 != assamY);
+        boolean nextAssam = (absX1 + absY1 == 1 || absX2 + absY2 == 1);
+
+
+        // Check if the rug will complete cover another rug.
+        String boardRug1 = boardString.substring((rugX1 * 21 + rugY1 * 3) + 1, (rugX1 * 21 + rugY1 * 3) + 4);
+        String boardRug2 = boardString.substring((rugX2 * 21 + rugY2 * 3) + 1, (rugX2 * 21 + rugY2 * 3) + 4);
+
+        if (rugNotOnAssam && nextAssam) {
+            if (!boardRug1.equals("n00") || !boardRug2.equals("n00")) {
+                boolean sameBoardRug = !boardRug1.equals(boardRug2);
+                return sameBoardRug;
+            }
             return true;
-        }else {
-            return false;
         }
-
-
+        return false;
     }
 
     /**
