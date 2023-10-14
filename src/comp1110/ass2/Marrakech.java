@@ -1,6 +1,8 @@
 package comp1110.ass2;
-import java.util.HashSet;
-import java.util.Random;
+import javafx.util.Pair;
+
+import java.util.*;
+
 public class Marrakech {
 
     /**
@@ -145,22 +147,27 @@ public class Marrakech {
     public static String rotateAssam(String currentAssam, int rotation) {
         // FIXME: Task 9
         //Get current orientation
-        char currentFacing = currentAssam.charAt(3);
+        String position = currentAssam.substring(1, 3);
+        char direction = currentAssam.charAt(3);
+        rotation%=360;
+        // Mapping the directions in order, so we can easily rotate Assam
+        String directions = "NESW";
 
-        int facing= "NESW".indexOf(currentFacing);
-        if (rotation == 0) {
-            return currentAssam;
-        }
-        else if (rotation == 90) {
-            facing = (facing+ 1) % 4;
-        } else if (rotation == 270) {
-            facing = (facing + 3) % 4;
-        }
+        // If rotation is not 90 or -90, Assam stays in the current direction
+        if (rotation != 90 && rotation != 270) {return currentAssam;}
 
-       //identify new facing and build new AssamString
-        char newFacing = "NESW".charAt(facing);
-        String newAssamString = "A" + currentAssam.substring(1, 3) + newFacing;
-        return newAssamString;
+        // Find the index of the current direction in the directions string
+        int currentIndex = directions.indexOf(direction);
+        int newIndex = -1;
+
+        // Rotate 90 degrees to the right
+        if (rotation == 90) {newIndex = (currentIndex + 1) % 4;}
+        // Rotate 90 degrees to the left
+        else {newIndex = (currentIndex - 1 + 4) % 4;}
+
+        // Construct and return the new Assam string
+        return "A" + position + directions.charAt(newIndex);
+
     }
 
     /**
@@ -176,41 +183,36 @@ public class Marrakech {
      */
     public static boolean isPlacementValid(String gameState, String rug) {
         // FIXME: Task 10
-       //Find String of Assam and Board:
         String assamString = gameState.substring(32, 36);
-
-        int indexOfBoard = gameState.indexOf('B');
-        String boardString = gameState.substring(indexOfBoard);
-
-        // Extract Assam's position and orientation if available
         int assamX = Character.getNumericValue(assamString.charAt(1));
         int assamY = Character.getNumericValue(assamString.charAt(2));
 
-        // Extract the position of the expected rug
+        // position of the expected rug
         int rugX1 = Character.getNumericValue(rug.charAt(3));
         int rugY1 = Character.getNumericValue(rug.charAt(4));
         int rugX2 = Character.getNumericValue(rug.charAt(5));
         int rugY2 = Character.getNumericValue(rug.charAt(6));
 
-        // use absolute value to describe location of rug and assam:
         int absX1 = Math.abs(rugX1 - assamX);
         int absY1 = Math.abs(rugY1 - assamY);
         int absX2 = Math.abs(rugX2 - assamX);
         int absY2 = Math.abs(rugY2 - assamY);
 
-        //Check if rug will place on Assam and whether it is next to Assam.
+        // Check if the rug will place on Assam and whether it is next to Assam
         boolean rugNotOnAssam = (rugX1 != assamX || rugY1 != assamY) && (rugX2 != assamX || rugY2 != assamY);
         boolean nextAssam = (absX1 + absY1 == 1 || absX2 + absY2 == 1);
 
-
-        // Check if the rug will complete cover another rug.
-        String boardRug1 = boardString.substring((rugX1 * 21 + rugY1 * 3) + 1, (rugX1 * 21 + rugY1 * 3) + 4);
-        String boardRug2 = boardString.substring((rugX2 * 21 + rugY2 * 3) + 1, (rugX2 * 21 + rugY2 * 3) + 4);
-
+       // if
         if (rugNotOnAssam && nextAssam) {
+            // Find the rug tiles in the board
+            String boardString = gameState.substring(gameState.indexOf('B'));
+
+            // Check if the rug will completely cover another rug
+            String boardRug1 = boardString.substring((rugX1 * 21 + rugY1 * 3) + 1, (rugX1 * 21 + rugY1 * 3) + 4);
+            String boardRug2 = boardString.substring((rugX2 * 21 + rugY2 * 3) + 1, (rugX2 * 21 + rugY2 * 3) + 4);
+
             if (!boardRug1.equals("n00") || !boardRug2.equals("n00")) {
-                boolean sameRugID = !boardRug1.equals(boardRug2);
-                return sameRugID;
+                return !boardRug1.equals(boardRug2);
             }
             return true;
         }
@@ -230,26 +232,160 @@ public class Marrakech {
      */
     public static int getPaymentAmount(String gameString) {
         // FIXME: Task 11
-        return -1;
+        String[] parts = gameString.split("A|B");
+        String playerString = parts[0];
+        String assamString = "A" + parts[1];
+        String boardString = parts[2];
+
+        // Parse Assam's position and orientation
+        int assamX = Character.getNumericValue(assamString.charAt(1));
+        int assamY = Character.getNumericValue(assamString.charAt(2));
+
+        // Get rugColor of Assam's position on board
+        String boardAssam = boardString.substring(assamX * 21 + assamY * 3, assamX * 21 + assamY * 3 + 3);
+        char rugColor = boardAssam.charAt(0);
+
+        // Create a set to track visited positions
+        Set<String> calculatedSpuare = new HashSet<>();
+
+        // Call the recursive function to calculate payment
+        int paymentAmount = payment(gameString, boardString, assamX, assamY, rugColor, calculatedSpuare);
+
+        return paymentAmount;
     }
 
-    /**
-     * Determine the winner of a game of Marrakech.
-     * For this task, you will be provided with a game state string and have to return a char representing the colour
-     * of the winner of the game. So for example if the cyan player is the winner, then you return 'c', if the red
-     * player is the winner return 'r', etc...
-     * If the game is not yet over, then you should return 'n'.
-     * If the game is over, but is a tie, then you should return 't'.
-     * Recall that a player's total score is the sum of their number of dirhams and the number of squares showing on the
-     * board that are of their colour, and that a player who is out of the game cannot win. If multiple players have the
-     * same total score, the player with the largest number of dirhams wins. If multiple players have the same total
-     * score and number of dirhams, then the game is a tie.
-     * @param gameState A String representation of the current state of the game
-     * @return A char representing the winner of the game as described above.
-     */
+    static int payment(String gameString, String boardString, int assamX, int assamY, char rugColor, Set<String> calculatedSpuare) {
+        String positionKey = assamX + "," + assamY;
+
+        // Check if Assam's position contains a rug and if it has not been calculated before
+        if (rugColor !='n' && !calculatedSpuare.contains(positionKey)) {
+            int paymentAmount = 1;
+            calculatedSpuare.add(positionKey);
+
+
+            int[][] nextRug = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+            for (int[] next : nextRug) {
+                int newX = assamX + next[0];
+                int newY = assamY + next[1];
+
+                if (newX >= 0 && newX < 7 && newY >= 0 && newY < 7) {
+                    // Check if the adjacent position contains a rug
+                    String connectedRug = boardString.substring(newX * 21 + newY * 3, newX * 21 + newY * 3 + 3);
+                    char connectedRugColor = connectedRug.charAt(0);
+
+                    if (connectedRugColor!='n' && connectedRugColor==rugColor) {
+                        // If the adjacent rug color is the same as Assam's rug color, it belongs to the same player
+                        paymentAmount += payment(gameString, boardString, newX, newY, rugColor, calculatedSpuare); // Recursively calculate payment
+                    }
+                }
+            }
+
+            return paymentAmount; // Return the total payment amount
+        }
+
+        return 0; // No rug at Assam's position, or already visited, so payment is 0
+    }
+
+        /**
+         * Determine the winner of a game of Marrakech.
+         * For this task, you will be provided with a game state string and have to return a char representing the colour
+         * of the winner of the game. So for example if the cyan player is the winner, then you return 'c', if the red
+         * player is the winner return 'r', etc...
+         * If the game is not yet over, then you should return 'n'.
+         * If the game is over, but is a tie, then you should return 't'.
+         * Recall that a player's total score is the sum of their number of dirhams and the number of squares showing on the
+         * board that are of their colour, and that a player who is out of the game cannot win. If multiple players have the
+         * same total score, the player with the largest number of dirhams wins. If multiple players have the same total
+         * score and number of dirhams, then the game is a tie.
+         * @param gameState A String representation of the current state of the game
+         * @return A char representing the winner of the game as described above.
+         */
     public static char getWinner(String gameState) {
-        // FIXME: Task 12
-        return '\0';
+
+        // If game not over, return 'n'
+        if (!isGameOver(gameState)) {
+            return 'n';
+        }
+
+        Map<Character, Integer> playerScores = new HashMap<>();
+
+        // find each player String
+        for (int p = 0; p < 4; p++) {
+            String playerString = gameState.substring(p * 8, (p + 1) * 8);
+            int playerDirhams = Integer.parseInt(playerString.substring(2, 5));
+            char playerColor = playerString.charAt(1);
+
+            // Calculate each player rugs on Board and total Score.
+            int playerScore = playerDirhams + boardRugs(playerColor,gameState);
+            playerScores.put(playerColor, playerScore);
+        }
+
+        // return winner
+        return getWinner(playerScores, gameState);
+    }
+
+    public static int boardRugs(char playerColor, String gameState) {
+        String boardString = gameState.substring(37);
+        int boardRugs = 0;
+
+        // find all rugs on the board
+        for (int c = 0; c < 7; c++) {
+            for (int r = 0; r < 7; r++) {
+                int startIndex = (c * 3) + (r * 21);
+                String abbreviatedRug = boardString.substring(startIndex, startIndex + 3);
+
+                // add rugs to each player
+                if (abbreviatedRug.charAt(0) == playerColor) {
+                    boardRugs++;
+                }
+            }
+        }
+
+        return boardRugs;
+    }
+
+    public static char getWinner(Map<Character, Integer> playerScores, String gameState) {
+
+        char winner = 't';
+        int highestScore = Integer.MIN_VALUE;
+        int highestDirhams = Integer.MIN_VALUE;
+
+        for (char playerColor : playerScores.keySet()) {
+            int playerScore = playerScores.get(playerColor);
+
+            //
+            if (playerScore > highestScore) {
+                highestScore = playerScore;
+                highestDirhams = getDirhams(playerColor, gameState);
+                winner = playerColor;
+                // Compare dirham if players have same score
+            } else if (playerScore == highestScore) {
+                int playerDirhams = getDirhams(playerColor, gameState);
+                if (playerDirhams > highestDirhams) {
+                    highestDirhams = playerDirhams;
+                    winner = playerColor;
+                } else if (playerDirhams == highestDirhams) {
+                    // 如果 Dirham 数量也相同，设定为平局
+                    winner = 't';
+                }
+            }
+        }
+
+        return winner;
+    }
+
+
+    private static int getDirhams(char playerColor, String gameState) {
+        for (int playerIndex = 0; playerIndex < 4; playerIndex++) {
+            String playerString = gameState.substring(playerIndex * 8, (playerIndex + 1) * 8);
+            char color = playerString.charAt(1);
+            int dirhams = Integer.parseInt(playerString.substring(2, 5));
+            if (color == playerColor) {
+                return dirhams;
+            }
+        }
+        return 0;
     }
 
     /**
