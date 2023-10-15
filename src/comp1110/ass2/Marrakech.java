@@ -3,6 +3,8 @@ import javafx.util.Pair;
 
 import java.util.*;
 
+
+
 public class Marrakech {
 
     /**
@@ -10,36 +12,37 @@ public class Marrakech {
      * For this method, you need to determine whether the rug String is valid, but do not need to determine whether it
      * can be placed on the board (you will determine that in Task 10 ). A rug is valid if and only if all the following
      * conditions apply:
-     *  - The String is 7 characters long
-     *  - The first character in the String corresponds to the colour character of a player present in the game
-     *  - The next two characters represent a 2-digit ID number
-     *  - The next 4 characters represent coordinates that are on the board
-     *  - The combination of that ID number and colour is unique
+     * - The String is 7 characters long
+     * - The first character in the String corresponds to the colour character of a player present in the game
+     * - The next two characters represent a 2-digit ID number
+     * - The next 4 characters represent coordinates that are on the board
+     * - The combination of that ID number and colour is unique
      * To clarify this last point, if a rug has the same ID as a rug on the board, but a different colour to that rug,
      * then it may still be valid. Obviously multiple rugs are allowed to have the same colour as well so long as they
      * do not share an ID. So, if we already have the rug c013343 on the board, then we can have the following rugs
-     *  - c023343 (Shares the colour but not the ID)
-     *  - y013343 (Shares the ID but not the colour)
+     * - c023343 (Shares the colour but not the ID)
+     * - y013343 (Shares the ID but not the colour)
      * But you cannot have c014445, because this has the same colour and ID as a rug on the board already.
+     *
      * @param gameString A String representing the current state of the game as per the README
-     * @param rug A String representing the rug you are checking
+     * @param rug        A String representing the rug you are checking
      * @return true if the rug is valid, and false otherwise.
      */
     public static boolean isRugValid(String gameString, String rug) {
         // (1)Check if the String is 7 Characters long
-        if (rug.length() !=7) {
+        if (rug.length() != 7) {
             return false;
         }
         // (2)Check first char: Use charAt method find the color and then compare it with players
-        char rugColor= rug.charAt(0);
-        if (rugColor != 'c' && rugColor != 'y' && rugColor != 'r' && rugColor != 'p' ){
+        char rugColor = rug.charAt(0);
+        if (rugColor != 'c' && rugColor != 'y' && rugColor != 'r' && rugColor != 'p') {
             return false;
         }
 
         // (3)Check id: Translate the string into integer to guarantee the placed rug starts with 00.
         String rugId = rug.substring(1, 3);
-        int idInt= Integer.parseInt(rugId);
-        if (idInt<0){
+        int idInt = Integer.parseInt(rugId);
+        if (idInt < 0) {
             return false;
         }
 
@@ -73,20 +76,21 @@ public class Marrakech {
      * Note that the die in Marrakech is not a regular 6-sided die, since there
      * are no faces that show 5 or 6, and instead 2 faces that show 2 and 3. That
      * is, of the 6 faces
-     *  - One shows 1
-     *  - Two show 2
-     *  - Two show 3
-     *  - One shows 4
+     * - One shows 1
+     * - Two show 2
+     * - Two show 3
+     * - One shows 4
      * As such, in order to get full marks for this task, you will need to implement
      * a die where the distribution of results from 1 to 4 is not even, with a 2 or 3
      * being twice as likely to be returned as a 1 or 4.
+     *
      * @return The result of the roll of the die meeting the criteria above
      */
 
     public static int rollDie() {
         //make a die with six side but only have value1-4
-        int[] die = {1,2,2,3,3,4};
-        Random random =new Random();
+        int[] die = {1, 2, 2, 3, 3, 4};
+        Random random = new Random();
         int randomIndex = random.nextInt(6);
         int randomNum = die[randomIndex];
         return randomNum;
@@ -97,6 +101,7 @@ public class Marrakech {
      * Recall from the README that a game of Marrakech is over if a Player is about to enter the rotation phase of their
      * turn, but no longer has any rugs. Note that we do not encode in the game state String whose turn it is, so you
      * will have to think about how to use the information we do encode to determine whether a game is over or not.
+     *
      * @param currentGame A String representation of the current state of the game.
      * @return true if the game is over, or false otherwise.
      */
@@ -109,7 +114,7 @@ public class Marrakech {
         String player4String = currentGame.substring(24, 32);
 
         // get each player's rugID and status(in or out of game)
-        int player1Rugs  = Integer.parseInt(player1String.substring(5, 7));
+        int player1Rugs = Integer.parseInt(player1String.substring(5, 7));
         char player1State = player1String.charAt(7);
         int player2Rugs = Integer.parseInt(player2String.substring(5, 7));
         char player2State = player2String.charAt(7);
@@ -119,12 +124,12 @@ public class Marrakech {
         char player4State = player4String.charAt(7);
 
         // if all turn player have no rugs or is out of game, the game is over.
-        boolean ifGameOver = (player1Rugs ==0 || player1State=='o')
-                &&(player2Rugs ==0 || player2State=='o')
-                &&(player3Rugs ==0 || player3State=='o')
-                &&(player4Rugs ==0 || player4State=='o');
+        boolean ifGameOver = (player1Rugs == 0 || player1State == 'o')
+                && (player2Rugs == 0 || player2State == 'o')
+                && (player3Rugs == 0 || player3State == 'o')
+                && (player4Rugs == 0 || player4State == 'o');
 
-        if(ifGameOver) {
+        if (ifGameOver) {
             return true;
         }
         return false;
@@ -137,10 +142,11 @@ public class Marrakech {
      * For example, if he is currently facing North (towards the top of the board), then he could be rotated to face
      * East or West, but not South. Assam can also only be rotated in 90 degree increments.
      * If the requested rotation is illegal, you should return Assam's current state unchanged.
+     *
      * @param currentAssam A String representing Assam's current state
-     * @param rotation The requested rotation, in degrees. This degree reading is relative to the direction Assam
-     *                 is currently facing, so a value of 0 for this argument will keep Assam facing in his
-     *                 current orientation, 90 would be turning him to the right, etc.
+     * @param rotation     The requested rotation, in degrees. This degree reading is relative to the direction Assam
+     *                     is currently facing, so a value of 0 for this argument will keep Assam facing in his
+     *                     current orientation, 90 would be turning him to the right, etc.
      * @return A String representing Assam's state after the rotation, or the input currentAssam if the requested
      * rotation is illegal.
      */
@@ -149,21 +155,27 @@ public class Marrakech {
         //Get current orientation
         String position = currentAssam.substring(1, 3);
         char direction = currentAssam.charAt(3);
-        rotation%=360;
+        rotation %= 360;
         // Mapping the directions in order, so we can easily rotate Assam
         String directions = "NESW";
 
         // If rotation is not 90 or -90, Assam stays in the current direction
-        if (rotation != 90 && rotation != 270) {return currentAssam;}
+        if (rotation != 90 && rotation != 270) {
+            return currentAssam;
+        }
 
         // Find the index of the current direction in the directions string
         int currentIndex = directions.indexOf(direction);
         int newIndex = -1;
 
         // Rotate 90 degrees to the right
-        if (rotation == 90) {newIndex = (currentIndex + 1) % 4;}
+        if (rotation == 90) {
+            newIndex = (currentIndex + 1) % 4;
+        }
         // Rotate 90 degrees to the left
-        else {newIndex = (currentIndex - 1 + 4) % 4;}
+        else {
+            newIndex = (currentIndex - 1 + 4) % 4;
+        }
 
         // Construct and return the new Assam string
         return "A" + position + directions.charAt(newIndex);
@@ -174,16 +186,18 @@ public class Marrakech {
      * Determine whether a potential new placement is valid (i.e that it describes a legal way to place a rug).
      * There are a number of rules which apply to potential new placements, which are detailed in the README but to
      * reiterate here:
-     *   1. A new rug must have one edge adjacent to Assam (not counting diagonals)
-     *   2. A new rug must not completely cover another rug. It is legal to partially cover an already placed rug, but
-     *      the new rug must not cover the entirety of another rug that's already on the board.
+     * 1. A new rug must have one edge adjacent to Assam (not counting diagonals)
+     * 2. A new rug must not completely cover another rug. It is legal to partially cover an already placed rug, but
+     * the new rug must not cover the entirety of another rug that's already on the board.
+     *
      * @param gameState A game string representing the current state of the game
-     * @param rug A rug string representing the candidate rug which you must check the validity of.
+     * @param rug       A rug string representing the candidate rug which you must check the validity of.
      * @return true if the placement is valid, and false otherwise.
      */
     public static boolean isPlacementValid(String gameState, String rug) {
         // FIXME: Task 10
         String assamString = gameState.substring(32, 36);
+        String boardString = gameState.substring(gameState.indexOf('B'));
         int assamX = Character.getNumericValue(assamString.charAt(1));
         int assamY = Character.getNumericValue(assamString.charAt(2));
 
@@ -198,14 +212,26 @@ public class Marrakech {
         int absX2 = Math.abs(rugX2 - assamX);
         int absY2 = Math.abs(rugY2 - assamY);
 
+        //make rugString valid
+        int rugID = Integer.parseInt(rug.substring(1, 3));
+
+        if (rugX1 < 0 || rugX1 > 6 || rugY1 < 0 || rugY1 > 6 || rugX2 < 0 || rugX2 > 6 || rugY2 < 0 || rugY2 > 6) {
+            return false;
+        }
+
+        // keep sure rugID didn't show in gameState
+        if (boardString.contains(rug.substring(0, 3))) {
+            return false;
+        }
+
+
         // Check if the rug will place on Assam and whether it is next to Assam
         boolean rugNotOnAssam = (rugX1 != assamX || rugY1 != assamY) && (rugX2 != assamX || rugY2 != assamY);
         boolean nextAssam = (absX1 + absY1 == 1 || absX2 + absY2 == 1);
 
-       // if
+        // if
         if (rugNotOnAssam && nextAssam) {
             // Find the rug tiles in the board
-            String boardString = gameState.substring(gameState.indexOf('B'));
 
             // Check if the rug will completely cover another rug
             String boardRug1 = boardString.substring((rugX1 * 21 + rugY1 * 3) + 1, (rugX1 * 21 + rugY1 * 3) + 4);
@@ -227,6 +253,7 @@ public class Marrakech {
      * square). Recall that the payment owed to the owner of the rug is equal to the number of connected squares showing
      * on the board that are of that colour. Similarly to the placement rules, two squares are only connected if they
      * share an entire edge -- diagonals do not count.
+     *
      * @param gameString A String representation of the current state of the game.
      * @return The amount of payment due, as an integer.
      */
@@ -258,7 +285,7 @@ public class Marrakech {
         String positionKey = assamX + "," + assamY;
 
         // Check if Assam's position contains a rug and if it has not been calculated before
-        if (rugColor !='n' && !calculatedSpuare.contains(positionKey)) {
+        if (rugColor != 'n' && !calculatedSpuare.contains(positionKey)) {
             int paymentAmount = 1;
             calculatedSpuare.add(positionKey);
 
@@ -274,7 +301,7 @@ public class Marrakech {
                     String connectedRug = boardString.substring(newX * 21 + newY * 3, newX * 21 + newY * 3 + 3);
                     char connectedRugColor = connectedRug.charAt(0);
 
-                    if (connectedRugColor!='n' && connectedRugColor==rugColor) {
+                    if (connectedRugColor != 'n' && connectedRugColor == rugColor) {
                         // If the adjacent rug color is the same as Assam's rug color, it belongs to the same player
                         paymentAmount += payment(gameString, boardString, newX, newY, rugColor, calculatedSpuare); // Recursively calculate payment
                     }
@@ -287,20 +314,21 @@ public class Marrakech {
         return 0; // No rug at Assam's position, or already visited, so payment is 0
     }
 
-        /**
-         * Determine the winner of a game of Marrakech.
-         * For this task, you will be provided with a game state string and have to return a char representing the colour
-         * of the winner of the game. So for example if the cyan player is the winner, then you return 'c', if the red
-         * player is the winner return 'r', etc...
-         * If the game is not yet over, then you should return 'n'.
-         * If the game is over, but is a tie, then you should return 't'.
-         * Recall that a player's total score is the sum of their number of dirhams and the number of squares showing on the
-         * board that are of their colour, and that a player who is out of the game cannot win. If multiple players have the
-         * same total score, the player with the largest number of dirhams wins. If multiple players have the same total
-         * score and number of dirhams, then the game is a tie.
-         * @param gameState A String representation of the current state of the game
-         * @return A char representing the winner of the game as described above.
-         */
+    /**
+     * Determine the winner of a game of Marrakech.
+     * For this task, you will be provided with a game state string and have to return a char representing the colour
+     * of the winner of the game. So for example if the cyan player is the winner, then you return 'c', if the red
+     * player is the winner return 'r', etc...
+     * If the game is not yet over, then you should return 'n'.
+     * If the game is over, but is a tie, then you should return 't'.
+     * Recall that a player's total score is the sum of their number of dirhams and the number of squares showing on the
+     * board that are of their colour, and that a player who is out of the game cannot win. If multiple players have the
+     * same total score, the player with the largest number of dirhams wins. If multiple players have the same total
+     * score and number of dirhams, then the game is a tie.
+     *
+     * @param gameState A String representation of the current state of the game
+     * @return A char representing the winner of the game as described above.
+     */
     public static char getWinner(String gameState) {
 
         // If game not over, return 'n'
@@ -317,7 +345,7 @@ public class Marrakech {
             char playerColor = playerString.charAt(1);
 
             // Calculate each player rugs on Board and total Score.
-            int playerScore = playerDirhams + boardRugs(playerColor,gameState);
+            int playerScore = playerDirhams + boardRugs(playerColor, gameState);
             playerScores.put(playerColor, playerScore);
         }
 
@@ -395,8 +423,9 @@ public class Marrakech {
      * according to the tracks diagrammed in the assignment README, which should be studied carefully before attempting
      * this task. For this task, you are not required to do any checking that the die result is sensible, nor whether
      * the current Assam string is sensible either -- you may assume that both of these are valid.
+     *
      * @param currentAssam A string representation of Assam's current state.
-     * @param dieResult The result of the die, which determines the number of squares Assam will move.
+     * @param dieResult    The result of the die, which determines the number of squares Assam will move.
      * @return A String representing Assam's state after the movement.
      */
     public static String moveAssam(String currentAssam, int dieResult) {
@@ -406,10 +435,18 @@ public class Marrakech {
 
         // Calculate new position based on direction and dieResult
         switch (direction) {
-            case 'N': y -= dieResult; break;
-            case 'S': y += dieResult; break;
-            case 'E': x += dieResult; break;
-            case 'W': x -= dieResult; break;
+            case 'N':
+                y -= dieResult;
+                break;
+            case 'S':
+                y += dieResult;
+                break;
+            case 'E':
+                x += dieResult;
+                break;
+            case 'W':
+                x -= dieResult;
+                break;
         }
 
         int remainingSteps = 0; // Additional steps after reaching boundary
@@ -441,20 +478,40 @@ public class Marrakech {
             } else {
                 // General boundary case: reverse direction and adjust x or y based on parity
                 switch (direction) {
-                    case 'N': direction = 'S'; x = (x % 2 == 0) ? x + 1 : x - 1; break;
-                    case 'S': direction = 'N'; x = (x % 2 == 0) ? x - 1 : x + 1; break;
-                    case 'E': direction = 'W'; y = (y % 2 == 0) ? y - 1 : y + 1; break;
-                    case 'W': direction = 'E'; y = (y % 2 == 0) ? y + 1 : y - 1; break;
+                    case 'N':
+                        direction = 'S';
+                        x = (x % 2 == 0) ? x + 1 : x - 1;
+                        break;
+                    case 'S':
+                        direction = 'N';
+                        x = (x % 2 == 0) ? x - 1 : x + 1;
+                        break;
+                    case 'E':
+                        direction = 'W';
+                        y = (y % 2 == 0) ? y - 1 : y + 1;
+                        break;
+                    case 'W':
+                        direction = 'E';
+                        y = (y % 2 == 0) ? y + 1 : y - 1;
+                        break;
                 }
                 remainingSteps -= 1;
             }
 
             // Move Assam the remaining steps in the new direction
             switch (direction) {
-                case 'N': y -= remainingSteps; break;
-                case 'S': y += remainingSteps; break;
-                case 'E': x += remainingSteps; break;
-                case 'W': x -= remainingSteps; break;
+                case 'N':
+                    y -= remainingSteps;
+                    break;
+                case 'S':
+                    y += remainingSteps;
+                    break;
+                case 'E':
+                    x += remainingSteps;
+                    break;
+                case 'W':
+                    x -= remainingSteps;
+                    break;
             }
 
             // Final position adjustment in case it's still out of bounds
@@ -471,14 +528,57 @@ public class Marrakech {
      * a turn. A rug may only be placed if it meets the conditions listed in the isPlacementValid task. If the rug
      * placement is valid, then you should return a new game string representing the board after the placement has
      * been completed. If the placement is invalid, then you should return the existing game unchanged.
+     *
      * @param currentGame A String representation of the current state of the game.
-     * @param rug A String representation of the rug that is to be placed.
+     * @param rug         A String representation of the rug that is to be placed.
      * @return A new game string representing the game following the successful placement of this rug if it is valid,
      * or the input currentGame unchanged otherwise.
      */
     public static String makePlacement(String currentGame, String rug) {
         // FIXME: Task 14
-        return "";
-    }
+        String[] parts = currentGame.split("A|B");
+        String[] playerStrings = parts[0].split("P");
+        String assamString = "A" + parts[1];
+        String boardString = "B"+ parts[2];
 
+        char rugColor = rug.charAt(0);
+        String rugID =rug.substring(1,3);
+        int rugX1 = Integer.parseInt(rug.substring(3, 4));
+        int rugY1 = Integer.parseInt(rug.substring(4, 5));
+        int rugX2 = Integer.parseInt(rug.substring(5, 6));
+        int rugY2 = Integer.parseInt(rug.substring(6, 7));
+
+
+
+        if (isPlacementValid(currentGame, rug)) {
+            // Replace rugID in BoardString
+            StringBuilder replaceRug = new StringBuilder(boardString);
+             replaceRug.replace(rugX1 * 21 + rugY1 * 3 + 1, rugX1 * 21 + rugY1 * 3 + 4, rugColor+rugID);
+             replaceRug.replace(rugX2 * 21 + rugY2 * 3 + 1, rugX2 * 21 + rugY2 * 3 + 4, rugColor+rugID);
+
+            //Find target playerString and change rugID
+            for (int i = 1; i < playerStrings.length; i++) {
+                char playerColor = playerStrings[i].charAt(0);
+                if (playerColor == rugColor) {
+                    int currentRugID = Integer.parseInt(playerStrings[i].substring(4, 6));
+                    currentRugID--;
+
+                    // Reference: transfer int into two digit String: https://stackoverflow.com/questions/11851403/save-an-integer-in-two-digit-format-in-a-variable-in-java
+                    String replacedRugID = String.format("%02d", currentRugID);
+                    playerStrings[i] = playerColor + playerStrings[i].substring(1,4)+replacedRugID+ playerStrings[i].charAt(6);
+                }
+            }
+
+            String newPlayerStrings = String.join("P", playerStrings);
+            String newGame = newPlayerStrings + assamString+ replaceRug.toString();
+            return newGame;
+        } else {
+            return currentGame;
+        }
+    }
 }
+
+
+
+
+
