@@ -18,9 +18,9 @@ public class Assam {
      * Initializes Assam at the specified position (3, 3) facing North (N) by default.
      */
     public Assam() {
-        this.x = DEFAULT_POSITION;
-        this.y = DEFAULT_POSITION;
-        this.orientation = DEFAULT_ORIENTATION;
+        x = DEFAULT_POSITION;
+        y = DEFAULT_POSITION;
+        orientation = DEFAULT_ORIENTATION;
     }
     public Assam(int x, int y, char orientation) {
         this.x = x;
@@ -36,9 +36,9 @@ public class Assam {
         if (assamStr == null || assamStr.length() != 4 || assamStr.charAt(0) != 'A') {
             throw new IllegalArgumentException("Invalid Assam string");
         }
-        this.x = Character.getNumericValue(assamStr.charAt(1));
-        this.y = Character.getNumericValue(assamStr.charAt(2));
-        this.orientation = assamStr.charAt(3);
+        x = Character.getNumericValue(assamStr.charAt(1));
+        y = Character.getNumericValue(assamStr.charAt(2));
+        orientation = assamStr.charAt(3);
         if ("NESW".indexOf(orientation) == -1) {
             throw new IllegalArgumentException("Invalid orientation character");
         }
@@ -49,15 +49,14 @@ public class Assam {
      * @param x The new x-coordinate.
      * @param y The new y-coordinate.
      */
-    public void updatePosition(int x, int y) {
-        // You might want to add some validation here, like checking if the new position is within the board bounds.
+    public void updateAssam(int x, int y, char orientation) {
         this.x = x;
         this.y = y;
+        this.orientation = orientation;
     }
 
-
-    public String toAssamString() {
-        return "A" + x + y + orientation;
+    public static String toAssamString(Assam assam) {
+        return "A" + assam.x + assam.y + assam.orientation;
     }
 
 
@@ -73,4 +72,16 @@ public class Assam {
         return orientation;
     }
     //We assume assam will start at the center of the board(3,3)
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setOrientation(char orientation) {
+        this.orientation = orientation;
+    }
 }

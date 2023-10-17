@@ -92,7 +92,7 @@ public class GameSet {
     }
 
     public String getCurrentAssamState() {
-        return assam.toAssamString();
+        return Assam.toAssamString(assam);
     }
 
     public String getCurrentRugState() { return getCurrentRugState();}
@@ -114,9 +114,15 @@ public class GameSet {
      * @return A string representing the complete state of the game.
      */
     public String getCurrentGameState() {
-        System.out.println(getCurrentPlayerState() + getCurrentAssamState() + getCurrentBoardState());
         return getCurrentPlayerState() + getCurrentAssamState() + getCurrentBoardState();
     }
+
+    /**
+     * Rotates Assam based on the player's input and updates its orientation.
+     *
+     * @param rotation the degree of rotation, which can be 90 or -90.
+     */
+
 
 
 }

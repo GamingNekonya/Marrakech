@@ -3,11 +3,13 @@ package comp1110.ass2.gui;
 import comp1110.ass2.*;
 import javafx.application.Application;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -32,6 +34,8 @@ public class Game extends Application {
     private Assam assam;
     private Board board;
     private GameSet gameSet = new GameSet();
+
+    private int currentPlayerIndex = 0;
 
 
     /**
@@ -192,11 +196,111 @@ public class Game extends Application {
         playerInfoGroup.getChildren().addAll(colorBox, dirhamsLabel, rugsLabel, inGameLabel);
     }
 
+    /**
+     * Highlights the information of the currently active player.
+     * This method should visually distinguish the active player's info panel,
+     * typically by changing the style or adding visual cues to indicate that it's their turn.
+     */
+    private void highlightCurrentPlayerInfo() {
+        // Remove existing highlights
+        for (Node node : playerInfoGroup.getChildren()) {
+            if (node instanceof Rectangle) {
+                Rectangle rect = (Rectangle) node;
+                rect.setStroke(Color.BLACK);  // Default color
+            }
+        }
+
+        // Highlight the current player's info
+        Node currentPlayerInfo = playerInfoGroup.getChildren().get(currentPlayerIndex * 4);  // 4 nodes per player
+        if (currentPlayerInfo instanceof Rectangle) {
+            Rectangle rect = (Rectangle) currentPlayerInfo;
+            rect.setStroke(Color.GOLD);  // Highlight color
+            rect.setStrokeWidth(5);  // Make the border thicker
+        }
+    }
+
+    /**
+     * Handles keyboard input for controlling the direction of Assam.
+     * W - Move forward (if Assam is not facing south, otherwise illegal)
+     * A - Rotate left (if Assam is not facing east, otherwise illegal)
+     * D - Rotate right (if Assam is not facing west, otherwise illegal)
+     * S - Illegal move (moving backward)
+     *
+     * @param code the KeyCode of the pressed key
+     */
+    private void handleKeyInput(KeyCode code) {
+        char currentDirection = assam.getOrientation();
+        int rotation = 0; // Rotation angle: 0 for no rotation, 90 for right, 270 for left
+        boolean illegalMove = false; // Flag for illegal move
+        // Determine the rotation based on the key pressed and the current direction
+        switch (currentDirection) {
+            case 'N':
+                if (code == KeyCode.S) {
+                    illegalMove = true; // Illegal to move backward when facing North
+                } else if (code == KeyCode.A) {
+                    rotation = 270; // Rotate left
+                } else if (code == KeyCode.D) {
+                    rotation = 90; // Rotate right
+                }
+                break;
+            case 'S':
+                if (code == KeyCode.W) {
+                    illegalMove = true; // Illegal to move backward when facing South
+                } else if (code == KeyCode.A) {
+                    rotation = 90; // Rotate right
+                } else if (code == KeyCode.D) {
+                    rotation = 270; // Rotate left
+                }
+                break;
+            case 'W':
+                if (code == KeyCode.D) {
+                    illegalMove = true; // Illegal to move backward when facing West
+                } else if (code == KeyCode.W) {
+                    rotation = 270; // Rotate left
+                } else if (code == KeyCode.S) {
+                    rotation = 90; // Rotate right
+                }
+                break;
+            case 'E':
+                if (code == KeyCode.A) {
+                    illegalMove = true; // Illegal to move backward when facing East
+                } else if (code == KeyCode.W) {
+                    rotation = 90; // Rotate right
+                } else if (code == KeyCode.S) {
+                    rotation = 270; // Rotate left
+                }
+                break;
+        }
+
+        if (illegalMove) {
+            // Handle illegal move, e.g., show an error message to the player
+            System.out.println("Illegal move! You cannot move Assam backward.");
+        } else if (rotation != 180) {
+            //next step
+
+        }
+
+    }
+
+    /**
+     * Advances the game to the next player's turn.
+     * This method should handle the transition between players, ensuring that game state variables are updated accordingly,
+     * and any necessary game logic is executed (e.g., validations, state saving).
+     * It should also update the UI to reflect the change, such as by calling `highlightCurrentPlayerInfo()`.
+     */
+
+    private void nextTurn() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % 4;  // Move to the next player
+        highlightCurrentPlayerInfo();  // Update the UI to reflect the change
+        // ... any other turn-based logic
+    }
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Marrakech Viewer");
         Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
+        scene.setOnKeyPressed(event -> handleKeyInput(event.getCode()));
 
         makeControls();  // Create the controls
         root.getChildren().add(controls);

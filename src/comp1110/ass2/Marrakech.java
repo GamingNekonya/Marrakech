@@ -129,10 +129,7 @@ public class Marrakech {
                 && (player3Rugs == 0 || player3State == 'o')
                 && (player4Rugs == 0 || player4State == 'o');
 
-        if (ifGameOver) {
-            return true;
-        }
-        return false;
+        return ifGameOver;
     }
 
 
@@ -151,7 +148,6 @@ public class Marrakech {
      * rotation is illegal.
      */
     public static String rotateAssam(String currentAssam, int rotation) {
-        // FIXME: Task 9
         //Get current orientation
         String position = currentAssam.substring(1, 3);
         char direction = currentAssam.charAt(3);
@@ -176,7 +172,6 @@ public class Marrakech {
         else {
             newIndex = (currentIndex - 1 + 4) % 4;
         }
-
         // Construct and return the new Assam string
         return "A" + position + directions.charAt(newIndex);
 
@@ -394,7 +389,6 @@ public class Marrakech {
                     highestDirhams = playerDirhams;
                     winner = playerColor;
                 } else if (playerDirhams == highestDirhams) {
-                    // 如果 Dirham 数量也相同，设定为平局
                     winner = 't';
                 }
             }
