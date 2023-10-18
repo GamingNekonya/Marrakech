@@ -4,6 +4,7 @@ import comp1110.ass2.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -26,8 +27,6 @@ import javafx.util.Duration;
 
 public class Game extends Application {
     private Scene mainGameScene;
-
-
     public static final int VIEWER_WIDTH = 1200;
     public static final int VIEWER_HEIGHT = 700;
 
@@ -115,6 +114,12 @@ public class Game extends Application {
         controls.getChildren().add(controlsBox);
     }
 
+    /**
+     * Draws the game board on the UI. This method initializes the board's cells
+     * and colors them based on the current state of the game.
+     * Each cell of the board is represented as a rectangle, and the color of the cell
+     * is determined by the color code fetched from the game's logic.
+     */
     private void drawBoard() {
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
@@ -147,6 +152,11 @@ public class Game extends Application {
             }
         }
     }
+
+    /**
+     * Displays the Assam on the board. The Assam is represented as a circle with a line indicating its orientation.
+     * The position of the Assam is determined by its current coordinates on the board, and its orientation is indicated by a line pointing in one of the four cardinal directions: North, East, South, or West.
+     */
     private void displayAssam() {
         int centerX = assam.getX() * SQUARE_SIZE + SQUARE_SIZE / 2;
         int centerY = assam.getY() * SQUARE_SIZE + SQUARE_SIZE / 2;
@@ -308,6 +318,30 @@ public class Game extends Application {
         }
     }
 
+    /**
+     * Displays a "Draw!" message on the user interface when the game ends in a draw.
+     * The message is centrally placed at the bottom of the game board.
+     */
+    private void displayDrawText() {
+        double startX = (VIEWER_WIDTH - 150) / 2;
+        double startY = 7 * SQUARE_SIZE + 10;
+
+        Label drawLabel = new Label("Draw!");
+        drawLabel.setFont(new Font(40));
+        drawLabel.setTextFill(Color.BLACK);
+        drawLabel.setLayoutX(startX);
+        drawLabel.setLayoutY(startY);
+        drawLabel.setAlignment(Pos.CENTER);
+
+        boardGroup.getChildren().add(drawLabel);
+    }
+
+    /**
+     * Displays a "Winner!" label next to the player information of the winning player.
+     *
+     * @param winnerColor The color identifier of the winning player. It's used to locate
+     *                    the player's information on the user interface.
+     */
     private void displayWinnerText(char winnerColor) {
         for (int i = 0; i < playerInfoGroup.getChildren().size(); i += 4) {
             Node colorBox = playerInfoGroup.getChildren().get(i);
@@ -327,6 +361,13 @@ public class Game extends Application {
         }
     }
 
+    /**
+     * Converts a color character identifier to its corresponding hexadecimal color string.
+     *
+     * @param color A character representing the color.
+     *              'c' for CYAN, 'y' for YELLOW, 'r' for RED, 'p' for PURPLE.
+     * @return A string representing the hexadecimal value of the color, or an empty string if the color identifier is invalid.
+     */
     private String colorToHex(char color) {
         switch (color) {
             case 'c':
@@ -363,15 +404,15 @@ public class Game extends Application {
                         nextTurn();
                     }
                     else {
-                        //Game end logic here
                         ((Timeline)ae.getSource()).stop();
                         String gameState = gameSet.getCurrentGameState();
 
                         char winner = Marrakech.getWinner(gameState);
                         if (winner != 'n') {
                             if (winner == 't') {
-                                //
-                            } else {
+                                displayDrawText();
+                            }
+                            else {
                                 displayWinnerText(winner);
                             }
                         }
@@ -396,6 +437,12 @@ public class Game extends Application {
         startGame();
     }
 
+    /**
+     * Switches the current scene to the main game scene.
+     *
+     * @param primaryStage The primary stage of the application where scenes are displayed.
+     *                     This is the main container of the JavaFX application.
+     */
     public void switchToMainScene(Stage primaryStage) {
         primaryStage.setScene(this.mainGameScene);
         primaryStage.show();
