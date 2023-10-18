@@ -296,6 +296,8 @@ public class Game extends Application {
                     rotation = 270; // Rotate left
                 } else if (code == KeyCode.D) {
                     rotation = 90; // Rotate right
+                }else if (code == KeyCode.W) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
             case 'S':
@@ -305,6 +307,8 @@ public class Game extends Application {
                     rotation = 90; // Rotate right
                 } else if (code == KeyCode.D) {
                     rotation = 270; // Rotate left
+                }else if (code == KeyCode.S) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
             case 'W':
@@ -314,6 +318,8 @@ public class Game extends Application {
                     rotation = 90; // Rotate left
                 } else if (code == KeyCode.S) {
                     rotation = 270; // Rotate right
+                }else if (code == KeyCode.A) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
             case 'E':
@@ -323,6 +329,8 @@ public class Game extends Application {
                     rotation = 270; // Rotate right
                 } else if (code == KeyCode.S) {
                     rotation = 90; // Rotate left
+                }else if (code == KeyCode.D) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
         }
@@ -350,6 +358,9 @@ public class Game extends Application {
                 currentStage = gameStage.ROLL_DICE;
                 waitForPlayerAction();
             }
+            disableKeyInput();
+            currentStage = gameStage.ROLL_DICE;
+            waitForPlayerAction();
         }
     }
 
