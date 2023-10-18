@@ -1,9 +1,8 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -11,10 +10,8 @@ import javafx.scene.Scene;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -23,7 +20,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 public class Game extends Application {
     private Scene mainGameScene;
@@ -37,6 +33,7 @@ public class Game extends Application {
 
     private final Group boardGroup = new Group();
     private final Group playerInfoGroup = new Group();
+    private Button rollDieBtn;
     private Assam assam;
     private Board board;
     private GameSet gameSet = new GameSet();
@@ -44,6 +41,10 @@ public class Game extends Application {
     private int currentPlayerIndex = 0;
 
     private static Game instance;
+
+    private gameStage currentStage;
+
+    private EventHandler<KeyEvent> keyEventHandler;
 
 
     /**
@@ -88,7 +89,7 @@ public class Game extends Application {
      */
     void makeControls() {
         // Button to roll the die
-        Button rollDieBtn = new Button("Roll the Die");
+        rollDieBtn = new Button("Roll the Die");
         // Text to display the result of the die roll
         Text dieResultTxt = new Text("Die result will appear here");
 
@@ -101,8 +102,13 @@ public class Game extends Application {
             int dieResult = Marrakech.rollDie();
             // Update the text to display the result of the die roll
             dieResultTxt.setText("You rolled: " + dieResult);
-            // Add additional code here to update the game state and re-display
-            // using displayState(gameSet.getCurrentGameState());
+            String currentAssamState = assam.toAssamString(assam);
+            String newAssamState = Marrakech.moveAssam(currentAssamState, dieResult);
+            int newX = Character.getNumericValue(newAssamState.charAt(1));
+            int newY = Character.getNumericValue(newAssamState.charAt(2));
+            char newOrientation = newAssamState.charAt(3);
+            assam.updateAssam(newX, newY, newOrientation);
+            rollDieBtn.setDisable(false);
         });
 
         // Add the button and text to a layout node and add to the controls group
@@ -314,7 +320,22 @@ public class Game extends Application {
 
                 // Update the display
                 displayAssam();
+                disableKeyInput();
+                currentStage = gameStage.ROLL_DICE;
+                waitForPlayerAction();
             }
+        }
+    }
+
+    private void enableKeyInput() {
+        if (keyEventHandler != null && mainGameScene != null) {
+            mainGameScene.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        }
+    }
+
+    private void disableKeyInput() {
+        if (keyEventHandler != null && mainGameScene != null) {
+            mainGameScene.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
         }
     }
 
@@ -383,6 +404,14 @@ public class Game extends Application {
         }
     }
 
+    private enum gameStage {
+        ROTATE_ASSAM,
+        ROLL_DICE,
+        MOVE_ASSAM,
+        PLACE_CARPET,
+        END_TURN
+    }
+
     /**
      * Advances the game to the next player's turn.
      * This method should handle the transition between players, ensuring that game state variables are updated accordingly,
@@ -391,36 +420,46 @@ public class Game extends Application {
      */
 
     private void nextTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % 4;  // Move to the next player
-        highlightCurrentPlayerInfo();  // Update the UI to reflect the change
-        // ... any other turn-based logic
+        String currentGameState = gameSet.getCurrentGameState();
+        char winner = Marrakech.getWinner(currentGameState);
+        if (winner != 'n') {
+            gameOver(winner);
+        } else {
+            currentStage = gameStage.ROTATE_ASSAM;
+            highlightCurrentPlayerInfo();
+            waitForPlayerAction();
+        }
+    }
+
+    private void waitForPlayerAction() {
+        switch (currentStage) {
+            case ROTATE_ASSAM:
+                enableKeyInput();
+                break;
+            case ROLL_DICE:
+                rollDieBtn.setDisable(false);
+                break;
+            case MOVE_ASSAM:
+                break;
+            case PLACE_CARPET:
+                break;
+            case END_TURN:
+                nextTurn();
+                break;
+        }
+    }
+
+
+    private void gameOver(char winner) {
+        if (winner == 't') {
+            displayDrawText();
+        } else {
+            displayWinnerText(winner);
+        }
     }
 
     public void startGame(){
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.seconds(1),
-                ae -> {
-                    if (!Marrakech.isGameOver(gameSet.getCurrentGameState())){
-                        nextTurn();
-                    }
-                    else {
-                        ((Timeline)ae.getSource()).stop();
-                        String gameState = gameSet.getCurrentGameState();
-
-                        char winner = Marrakech.getWinner(gameState);
-                        if (winner != 'n') {
-                            if (winner == 't') {
-                                displayDrawText();
-                            }
-                            else {
-                                displayWinnerText(winner);
-                            }
-                        }
-                    }
-                }
-        ));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        nextTurn();
     }
 
 
@@ -428,9 +467,14 @@ public class Game extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Marrakech Game");
         this.mainGameScene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
-        this.mainGameScene.setOnKeyPressed(event -> handleKeyInput(event.getCode()));
-
+        this.keyEventHandler = new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                handleKeyInput(event.getCode());
+            }
+        };
         makeControls();  // Create the controls
+        rollDieBtn.setDisable(true);
         root.getChildren().add(controls);
         displayState(gameSet.getCurrentGameState());
         StartScene startScene = new StartScene(primaryStage, this);
@@ -446,7 +490,9 @@ public class Game extends Application {
     public void switchToMainScene(Stage primaryStage) {
         primaryStage.setScene(this.mainGameScene);
         primaryStage.show();
+        enableKeyInput();
     }
+
     public Game(){
         instance = this;
     }
