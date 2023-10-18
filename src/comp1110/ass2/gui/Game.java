@@ -1,6 +1,8 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -9,20 +11,25 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Game extends Application {
+    private Scene mainGameScene;
 
 
-    private static final int VIEWER_WIDTH = 1200;
-    private static final int VIEWER_HEIGHT = 700;
+    public static final int VIEWER_WIDTH = 1200;
+    public static final int VIEWER_HEIGHT = 700;
 
     private static final int SQUARE_SIZE = 50;
 
@@ -36,6 +43,8 @@ public class Game extends Application {
     private GameSet gameSet = new GameSet();
 
     private int currentPlayerIndex = 0;
+
+    private static Game instance;
 
 
     /**
@@ -219,14 +228,18 @@ public class Game extends Application {
         }
     }
 
+
     /**
-     * Handles keyboard input for controlling the direction of Assam.
-     * W - Move forward (if Assam is not facing south, otherwise illegal)
-     * A - Rotate left (if Assam is not facing east, otherwise illegal)
-     * D - Rotate right (if Assam is not facing west, otherwise illegal)
-     * S - Illegal move (moving backward)
+     * Handles keyboard input from the user to control the rotation and movement of Assam.
      *
-     * @param code the KeyCode of the pressed key
+     * This method determines the new orientation of Assam based on the key pressed (W, A, S, D)
+     * and its current orientation (N, E, S, W). It doesn't permit moving backward (e.g., pressing W while facing South,
+     * or S while facing North, etc.). In case of an illegal move, the method will provide an error message.
+     *
+     * If a valid key is pressed, the method calculates the new orientation, updates Assam's state, and reflects this change in the UI.
+     *
+     * @param code The KeyCode corresponding to the pressed key by the user, expected to be W (move North), A (move West), S (move South), D (move East).
+     *             The actual effect of these keys depends on Assam's current orientation.
      */
     private void handleKeyInput(KeyCode code) {
         char currentDirection = assam.getOrientation();
@@ -256,18 +269,18 @@ public class Game extends Application {
                 if (code == KeyCode.D) {
                     illegalMove = true; // Illegal to move backward when facing West
                 } else if (code == KeyCode.W) {
-                    rotation = 270; // Rotate left
+                    rotation = 90; // Rotate left
                 } else if (code == KeyCode.S) {
-                    rotation = 90; // Rotate right
+                    rotation = 270; // Rotate right
                 }
                 break;
             case 'E':
                 if (code == KeyCode.A) {
                     illegalMove = true; // Illegal to move backward when facing East
                 } else if (code == KeyCode.W) {
-                    rotation = 90; // Rotate right
+                    rotation = 270; // Rotate right
                 } else if (code == KeyCode.S) {
-                    rotation = 270; // Rotate left
+                    rotation = 90; // Rotate left
                 }
                 break;
         }
@@ -275,11 +288,58 @@ public class Game extends Application {
         if (illegalMove) {
             // Handle illegal move, e.g., show an error message to the player
             System.out.println("Illegal move! You cannot move Assam backward.");
-        } else if (rotation != 180) {
-            //next step
-
         }
+        else if (rotation != 180) {
+            String currentAssamState = assam.toAssamString(assam);
+            String newAssamState = Marrakech.rotateAssam(currentAssamState, rotation);
 
+            if (!newAssamState.equals(currentAssamState)) {
+                // Parse the new Assam state
+                int newX = Character.getNumericValue(newAssamState.charAt(1));
+                int newY = Character.getNumericValue(newAssamState.charAt(2));
+                char newOrientation = newAssamState.charAt(3);
+
+                // Update Assam's state
+                assam.updateAssam(newX, newY, newOrientation);
+
+                // Update the display
+                displayAssam();
+            }
+        }
+    }
+
+    private void displayWinnerText(char winnerColor) {
+        for (int i = 0; i < playerInfoGroup.getChildren().size(); i += 4) {
+            Node colorBox = playerInfoGroup.getChildren().get(i);
+            if (colorBox instanceof Rectangle && ((Rectangle)colorBox).getFill().toString().equals(colorToHex(winnerColor))) {
+                double startX = colorBox.getLayoutX() + 150;
+                double startY = colorBox.getLayoutY() + 60;
+
+                Label winnerLabel = new Label("Winner!");
+                winnerLabel.setFont(new Font(20));
+                winnerLabel.setTextFill(Color.GOLD);
+                winnerLabel.setLayoutX(startX);
+                winnerLabel.setLayoutY(startY);
+
+                playerInfoGroup.getChildren().add(winnerLabel);
+                break;
+            }
+        }
+    }
+
+    private String colorToHex(char color) {
+        switch (color) {
+            case 'c':
+                return Color.CYAN.toString();
+            case 'y':
+                return Color.YELLOW.toString();
+            case 'r':
+                return Color.RED.toString();
+            case 'p':
+                return Color.PURPLE.toString();
+            default:
+                return "";
+        }
     }
 
     /**
@@ -295,19 +355,61 @@ public class Game extends Application {
         // ... any other turn-based logic
     }
 
+    public void startGame(){
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.seconds(1),
+                ae -> {
+                    if (!Marrakech.isGameOver(gameSet.getCurrentGameState())){
+                        nextTurn();
+                    }
+                    else {
+                        //Game end logic here
+                        ((Timeline)ae.getSource()).stop();
+                        String gameState = gameSet.getCurrentGameState();
+
+                        char winner = Marrakech.getWinner(gameState);
+                        if (winner != 'n') {
+                            if (winner == 't') {
+                                //
+                            } else {
+                                displayWinnerText(winner);
+                            }
+                        }
+                    }
+                }
+        ));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Marrakech Viewer");
-        Scene scene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
-        scene.setOnKeyPressed(event -> handleKeyInput(event.getCode()));
+        primaryStage.setTitle("Marrakech Game");
+        this.mainGameScene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
+        this.mainGameScene.setOnKeyPressed(event -> handleKeyInput(event.getCode()));
 
         makeControls();  // Create the controls
         root.getChildren().add(controls);
         displayState(gameSet.getCurrentGameState());
+        StartScene startScene = new StartScene(primaryStage, this);
+        startGame();
+    }
 
-        primaryStage.setScene(scene);
+    public void switchToMainScene(Stage primaryStage) {
+        primaryStage.setScene(this.mainGameScene);
         primaryStage.show();
+    }
+    public Game(){
+        instance = this;
+    }
+
+    public static Game getInstance(){
+        return instance;
+    }
+
+    public Group getRoot(){
+        return root;
     }
 
     public static void main(String[] args) {

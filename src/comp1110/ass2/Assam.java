@@ -80,8 +80,4 @@ public class Assam {
     public void setY(int y) {
         this.y = y;
     }
-
-    public void setOrientation(char orientation) {
-        this.orientation = orientation;
-    }
 }

@@ -345,7 +345,7 @@ public class Marrakech {
         }
 
         // return winner
-        return getWinner(playerScores, gameState);
+        return getTrueWinner(playerScores, gameState);
     }
 
     public static int boardRugs(char playerColor, String gameState) {
@@ -368,7 +368,7 @@ public class Marrakech {
         return boardRugs;
     }
 
-    public static char getWinner(Map<Character, Integer> playerScores, String gameState) {
+    public static char getTrueWinner(Map<Character, Integer> playerScores, String gameState) {
 
         char winner = 't';
         int highestScore = Integer.MIN_VALUE;

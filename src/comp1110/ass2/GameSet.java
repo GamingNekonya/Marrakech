@@ -116,14 +116,5 @@ public class GameSet {
     public String getCurrentGameState() {
         return getCurrentPlayerState() + getCurrentAssamState() + getCurrentBoardState();
     }
-
-    /**
-     * Rotates Assam based on the player's input and updates its orientation.
-     *
-     * @param rotation the degree of rotation, which can be 90 or -90.
-     */
-
-
-
 }
 
