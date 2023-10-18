@@ -46,6 +46,12 @@ public class Game extends Application {
 
     private EventHandler<KeyEvent> keyEventHandler;
 
+    private Circle currentAssamCircle = null;
+    private Line currentOrientationLine = null;
+
+    private Label statusLabel;
+
+
 
     /**
      * Draw a placement in the window, removing any previously drawn placements
@@ -68,6 +74,13 @@ public class Game extends Application {
         // Ensure boardStr starts with 'B'
         if (!boardStr.startsWith("B")) {
             boardStr = "B" + boardStr;
+        }
+
+        if (statusLabel == null) {
+            statusLabel = new Label();
+            statusLabel.setLayoutX(10);
+            statusLabel.setLayoutY(VIEWER_HEIGHT - 30);
+            root.getChildren().add(statusLabel);
         }
 
 
@@ -108,7 +121,10 @@ public class Game extends Application {
             int newY = Character.getNumericValue(newAssamState.charAt(2));
             char newOrientation = newAssamState.charAt(3);
             assam.updateAssam(newX, newY, newOrientation);
-            rollDieBtn.setDisable(false);
+            rollDieBtn.setDisable(true);
+            displayAssam();
+            currentStage = gameStage.MOVE_ASSAM;
+            waitForPlayerAction();
         });
 
         // Add the button and text to a layout node and add to the controls group
@@ -166,6 +182,9 @@ public class Game extends Application {
     private void displayAssam() {
         int centerX = assam.getX() * SQUARE_SIZE + SQUARE_SIZE / 2;
         int centerY = assam.getY() * SQUARE_SIZE + SQUARE_SIZE / 2;
+        if (currentAssamCircle != null && currentOrientationLine != null) {
+            boardGroup.getChildren().removeAll(currentAssamCircle, currentOrientationLine);
+        }
 
         Circle assamCircle = new Circle(centerX, centerY, SQUARE_SIZE / 4, Color.BROWN);
 
@@ -192,7 +211,14 @@ public class Game extends Application {
                 break;
         }
 
-        boardGroup.getChildren().addAll(assamCircle, orientationLine);
+        if (currentAssamCircle != null && currentOrientationLine != null) {
+            boardGroup.getChildren().removeAll(currentAssamCircle, currentOrientationLine);
+        }
+
+        currentAssamCircle = assamCircle;
+        currentOrientationLine = orientationLine;
+
+        boardGroup.getChildren().addAll(currentAssamCircle, currentOrientationLine);
     }
 
     private void displayPlayerInfo(Player player, int index) {
@@ -303,7 +329,7 @@ public class Game extends Application {
 
         if (illegalMove) {
             // Handle illegal move, e.g., show an error message to the player
-            System.out.println("Illegal move! You cannot move Assam backward.");
+            statusLabel.setText("Illegal move! You cannot move Assam backward.");
         }
         else if (rotation != 180) {
             String currentAssamState = assam.toAssamString(assam);
