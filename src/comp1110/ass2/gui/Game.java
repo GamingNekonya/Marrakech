@@ -222,7 +222,6 @@ public class Game extends Application {
                 newImage = new Image("./Resources/Assam_S.png");
                 break;
         }
-
         assamImageView.setImage(newImage);
     }
 
