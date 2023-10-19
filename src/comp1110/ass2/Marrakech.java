@@ -96,7 +96,7 @@ public class Marrakech {
         return randomNum;
     }
 
-    /**
+    /**task8
      * Determine whether a game of Marrakech is over
      * Recall from the README that a game of Marrakech is over if a Player is about to enter the rotation phase of their
      * turn, but no longer has any rugs. Note that we do not encode in the game state String whose turn it is, so you
@@ -133,7 +133,7 @@ public class Marrakech {
     }
 
 
-    /**
+    /**task9
      * Implement Assam's rotation.
      * Recall that Assam may only be rotated left or right, or left alone -- he cannot be rotated a full 180 degrees.
      * For example, if he is currently facing North (towards the top of the board), then he could be rotated to face
@@ -309,7 +309,7 @@ public class Marrakech {
         return 0; // No rug at Assam's position, or already visited, so payment is 0
     }
 
-    /**
+    /**task12
      * Determine the winner of a game of Marrakech.
      * For this task, you will be provided with a game state string and have to return a char representing the colour
      * of the winner of the game. So for example if the cyan player is the winner, then you return 'c', if the red
@@ -410,7 +410,7 @@ public class Marrakech {
         return 0;
     }
 
-    /**
+    /** task13
      * Implement Assam's movement.
      * Assam moves a number of squares equal to the die result, provided to you by the argument dieResult. Assam moves
      * in the direction he is currently facing. If part of Assam's movement results in him leaving the board, he moves

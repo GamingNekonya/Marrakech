@@ -192,15 +192,15 @@ public class Game extends Application {
     private void displayAssam() {
         if (assamImageView == null) {
             assamImageView = new ImageView();
-            assamImageView.setFitWidth(SQUARE_SIZE);  // 设置图片的宽度
-            assamImageView.setFitHeight(SQUARE_SIZE); // 设置图片的高度
-            assamImageView.setPreserveRatio(true);   // 保持原始比例
+            assamImageView.setFitWidth(SQUARE_SIZE);
+            assamImageView.setFitHeight(SQUARE_SIZE);
+            assamImageView.setPreserveRatio(true);
             boardGroup.getChildren().add(assamImageView);
         }
 
         assamImageView.setLayoutX(assam.getX() * SQUARE_SIZE);
         assamImageView.setLayoutY(assam.getY() * SQUARE_SIZE);
-        rotateAssamImage(assam.getOrientation());  // 设置正确的图像
+        rotateAssamImage(assam.getOrientation());
     }
 
     private void rotateAssamImage(char orientation) {
@@ -219,18 +219,21 @@ public class Game extends Application {
                 newImage = new Image("./Resources/AssamW.png");
                 break;
             default:
-                newImage = new Image("./Resources/Assam_S.png"); // 默认使用朝向南的图像
+                newImage = new Image("./Resources/Assam_S.png");
                 break;
         }
 
         assamImageView.setImage(newImage);
     }
 
+    /**
+     * Call Marrakech.rotateAssam to set the rotate direction of Assam
+     */
     private void setAssamDirection(char newDirection) {
         char currentDirection = assam.getOrientation();
         int rotation = 0;
 
-        // 计算旋转的角度
+        // rotate degree:
         switch (currentDirection) {
             case 'N':
                 if (newDirection == 'E') rotation = 90;
@@ -250,11 +253,11 @@ public class Game extends Application {
                 break;
         }
 
-        // 调用rotateAssam方法来获取旋转后的Assam状态
+        // call rotateAssam to obtain the currentAssamState
         String currentAssamState = "A" + assam.getX() + assam.getY() + currentDirection;
         String newAssamState = Marrakech.rotateAssam(currentAssamState, rotation);
 
-        // 如果旋转是合法的，那么更新Assam的方向
+        // If rotate pass the rotateAssame test, then rotate the Assam Image.
         if (!newAssamState.equals(currentAssamState)) {
             assam.setOrientation(newDirection);
             displayAssam();
