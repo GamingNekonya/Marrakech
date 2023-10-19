@@ -25,6 +25,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.scene.layout.Pane;
 
+import static comp1110.ass2.Marrakech.moveAssam;
+
 public class Game extends Application {
     private Scene mainGameScene;
 
@@ -136,7 +138,9 @@ public class Game extends Application {
             // Update the text to display the result of the die roll
             dieResultTxt.setText("You rolled: " + dieResult);
             // Add additional code here to update the game state and re-display
-            // using displayState(gameSet.getCurrentGameState());
+            String currentAssamState = "A" + assam.getX() + assam.getY() + assam.getOrientation();
+            String newAssamState = moveAssam(currentAssamState, dieResult);
+            updateAssamPosition(newAssamState);
         });
 
         // Add the buttons to a layout node
@@ -144,7 +148,6 @@ public class Game extends Application {
         controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt, directionalPane);
         controlsBox.setLayoutX(VIEWER_WIDTH - 400);
         controlsBox.setLayoutY(VIEWER_HEIGHT - 200);
-
         controls.getChildren().add(controlsBox);
     }
 
@@ -180,6 +183,11 @@ public class Game extends Application {
             }
         }
     }
+
+    /**
+     * Use image to show the location of Assam.
+     * Then rotate the Assam based on the direction button
+     */
     private void displayAssam() {
         if (assamImageView == null) {
             assamImageView = new ImageView();
@@ -221,6 +229,18 @@ public class Game extends Application {
         assam.setOrientation(direction);
         displayAssam();
     }
+
+    private void updateAssamPosition(String assamState) {
+        int x = Character.getNumericValue(assamState.charAt(1));
+        int y = Character.getNumericValue(assamState.charAt(2));
+        char direction = assamState.charAt(3);
+
+        assam.setX(x);
+        assam.setY(y);
+        assam.setOrientation(direction);
+        displayAssam();
+    }
+
 
     private void displayPlayerInfo(Player player, int index) {
         double startX = 400;
