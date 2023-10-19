@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -95,6 +96,20 @@ public class Game extends Application {
         // Text to display the result of the die roll
         Text dieResultTxt = new Text("Die result will appear here");
 
+        // New directional buttons
+        Button northBtn = new Button("North");
+        northBtn.setOnAction(e -> setAssamDirection('N'));
+
+        Button southBtn = new Button("South");
+        southBtn.setOnAction(e -> setAssamDirection('S'));
+
+        Button eastBtn = new Button("East");
+        eastBtn.setOnAction(e -> setAssamDirection('E'));
+
+        Button westBtn = new Button("West");
+        westBtn.setOnAction(e -> setAssamDirection('W'));
+
+
         /**
          * Set an action on the button. When the button is clicked,
          * the rollDie method is called, and the result is displayed
@@ -108,11 +123,14 @@ public class Game extends Application {
             // using displayState(gameSet.getCurrentGameState());
         });
 
-        // Add the button and text to a layout node and add to the controls group
-        HBox controlsBox = new HBox(10);  // 10 is the spacing between controls
-        controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt);
-        controlsBox.setLayoutX(VIEWER_WIDTH - 200);
-        controlsBox.setLayoutY(VIEWER_HEIGHT - 50);
+        // Add the buttons to a layout node
+        VBox directionControls = new VBox(10);  // VBox for vertical layout
+        directionControls.getChildren().addAll(northBtn, southBtn, eastBtn, westBtn);
+
+        HBox controlsBox = new HBox(20);  // Increase spacing between controls
+        controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt, directionControls);  // Add the direction controls to the HBox
+        controlsBox.setLayoutX(VIEWER_WIDTH - 400);
+        controlsBox.setLayoutY(VIEWER_HEIGHT - 200);
 
         controls.getChildren().add(controlsBox);
     }
@@ -185,6 +203,11 @@ public class Game extends Application {
         }
 
         assamImageView.setImage(newImage);
+    }
+
+    private void setAssamDirection(char direction) {
+        assam.setOrientation(direction);
+        displayAssam();
     }
 
     private void displayPlayerInfo(Player player, int index) {
