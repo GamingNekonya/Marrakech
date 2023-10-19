@@ -73,6 +73,11 @@ public class Assam {
     }
     //We assume assam will start at the center of the board(3,3)
 
+    public void setOrientation(char orientation) {
+        this.orientation = orientation;
+    }
+
+
     public void setX(int x) {
         this.x = x;
     }

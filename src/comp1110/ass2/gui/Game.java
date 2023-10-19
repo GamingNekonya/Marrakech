@@ -137,18 +137,19 @@ public class Game extends Application {
             int dieResult = Marrakech.rollDie();
             // Update the text to display the result of the die roll
             dieResultTxt.setText("You rolled: " + dieResult);
-            // Add additional code here to update the game state and re-display
+
+            // update the assam position and then move base on dieResult
             String currentAssamState = "A" + assam.getX() + assam.getY() + assam.getOrientation();
             String newAssamState = moveAssam(currentAssamState, dieResult);
             updateAssamPosition(newAssamState);
         });
 
-        // Add the buttons to a layout node
-        HBox controlsBox = new HBox(10);
-        controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt, directionalPane);
-        controlsBox.setLayoutX(VIEWER_WIDTH - 400);
-        controlsBox.setLayoutY(VIEWER_HEIGHT - 200);
-        controls.getChildren().add(controlsBox);
+            // Add the buttons to a layout node
+            HBox controlsBox = new HBox(10);
+            controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt, directionalPane);
+            controlsBox.setLayoutX(VIEWER_WIDTH - 400);
+            controlsBox.setLayoutY(VIEWER_HEIGHT - 200);
+            controls.getChildren().add(controlsBox);
     }
 
     private void drawBoard() {
