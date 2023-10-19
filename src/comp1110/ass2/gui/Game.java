@@ -18,17 +18,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.layout.Pane;
 
 public class Game extends Application {
     private Scene mainGameScene;
-
 
     public static final int VIEWER_WIDTH = 1200;
     public static final int VIEWER_HEIGHT = 700;
@@ -96,7 +94,10 @@ public class Game extends Application {
         // Text to display the result of the die roll
         Text dieResultTxt = new Text("Die result will appear here");
 
-        // New directional buttons
+        // Add the Face_Symbol image to help choose directions.
+        Image compassImage = new Image("./Resources/Facing_Symbol.png");
+        ImageView compassImageView = new ImageView(compassImage);
+        // Button to choose directions
         Button northBtn = new Button("North");
         northBtn.setOnAction(e -> setAssamDirection('N'));
 
@@ -109,6 +110,21 @@ public class Game extends Application {
         Button westBtn = new Button("West");
         westBtn.setOnAction(e -> setAssamDirection('W'));
 
+        Pane directionalPane = new Pane();
+        directionalPane.getChildren().addAll(compassImageView, northBtn, southBtn, eastBtn, westBtn);
+
+        // Adjust button locations
+        northBtn.setLayoutX(25);
+        northBtn.setLayoutY(-30);
+
+        southBtn.setLayoutX(25);
+        southBtn.setLayoutY(110);
+
+        eastBtn.setLayoutX(100);
+        eastBtn.setLayoutY(40);
+
+        westBtn.setLayoutX(-50);
+        westBtn.setLayoutY(40);
 
         /**
          * Set an action on the button. When the button is clicked,
@@ -124,11 +140,8 @@ public class Game extends Application {
         });
 
         // Add the buttons to a layout node
-        VBox directionControls = new VBox(10);  // VBox for vertical layout
-        directionControls.getChildren().addAll(northBtn, southBtn, eastBtn, westBtn);
-
-        HBox controlsBox = new HBox(20);  // Increase spacing between controls
-        controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt, directionControls);  // Add the direction controls to the HBox
+        HBox controlsBox = new HBox(10);
+        controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt, directionalPane);
         controlsBox.setLayoutX(VIEWER_WIDTH - 400);
         controlsBox.setLayoutY(VIEWER_HEIGHT - 200);
 
@@ -183,7 +196,6 @@ public class Game extends Application {
 
     private void rotateAssamImage(char orientation) {
         Image newImage;
-
         switch (orientation) {
             case 'N':
                 newImage = new Image("./Resources/AssamN.png");
