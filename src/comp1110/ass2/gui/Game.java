@@ -226,9 +226,39 @@ public class Game extends Application {
         assamImageView.setImage(newImage);
     }
 
-    private void setAssamDirection(char direction) {
-        assam.setOrientation(direction);
-        displayAssam();
+    private void setAssamDirection(char newDirection) {
+        char currentDirection = assam.getOrientation();
+        int rotation = 0;
+
+        // 计算旋转的角度
+        switch (currentDirection) {
+            case 'N':
+                if (newDirection == 'E') rotation = 90;
+                else if (newDirection == 'W') rotation = 270;
+                break;
+            case 'E':
+                if (newDirection == 'S') rotation = 90;
+                else if (newDirection == 'N') rotation = 270;
+                break;
+            case 'S':
+                if (newDirection == 'W') rotation = 90;
+                else if (newDirection == 'E') rotation = 270;
+                break;
+            case 'W':
+                if (newDirection == 'N') rotation = 90;
+                else if (newDirection == 'S') rotation = 270;
+                break;
+        }
+
+        // 调用rotateAssam方法来获取旋转后的Assam状态
+        String currentAssamState = "A" + assam.getX() + assam.getY() + currentDirection;
+        String newAssamState = Marrakech.rotateAssam(currentAssamState, rotation);
+
+        // 如果旋转是合法的，那么更新Assam的方向
+        if (!newAssamState.equals(currentAssamState)) {
+            assam.setOrientation(newDirection);
+            displayAssam();
+        }
     }
 
     private void updateAssamPosition(String assamState) {
