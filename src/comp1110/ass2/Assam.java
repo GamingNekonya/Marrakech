@@ -55,6 +55,16 @@ public class Assam {
         this.orientation = orientation;
     }
 
+    public char getCurrentAssamPositionRugColor() {
+
+        int assamX = this.getX();
+        int assamY = this.getY();
+
+        String boardAssam = Board.toBoardString().substring(assamX * 21 + assamY * 3, assamX * 21 + assamY * 3 + 3);
+        char rugColor = boardAssam.charAt(0);
+
+        return rugColor;
+    }
     public static String toAssamString(Assam assam) {
         return "A" + assam.x + assam.y + assam.orientation;
     }

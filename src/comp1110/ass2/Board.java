@@ -1,16 +1,22 @@
 package comp1110.ass2;
 
 
+import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represents the game board of Marrakech.
  */
 public class Board {
-    private String[][] grid;  // Holds abbreviated rug strings
+    private static String[][] grid;  // Holds abbreviated rug strings
     /**
      * Creates a new 7x7 game board.
      */
     private static final int SIZE = 7;
     //2D array representing the board.
+
 
     /**
      * Constructor to initialize the game board.
@@ -44,12 +50,35 @@ public class Board {
             }
         }
     }
+
+    private boolean isWithinBoard(int x, int y) {
+        return x >= 0 && x < SIZE && y >= 0 && y < SIZE;
+    }
+
+    public List<int[]> getAdjacentSquares(int currentAssamX, int currentAssamY) {
+        int[][] adjacentCoordinates = {
+                {currentAssamX - 1, currentAssamY},
+                {currentAssamX + 1, currentAssamY},
+                {currentAssamX, currentAssamY - 1},
+                {currentAssamX, currentAssamY + 1}
+        };
+
+        List<int[]> validCoordinates = new ArrayList<>();
+        for (int[] coordinates : adjacentCoordinates) {
+            int x = coordinates[0];
+            int y = coordinates[1];
+            if (x >= 0 && x < SIZE && y >= 0 && y < SIZE) { // SIZE is the board's width and height
+                validCoordinates.add(coordinates);
+            }
+        }
+        return validCoordinates;
+    }
     /**
      * Convert the board state into a board string following the rules given.
      *
      * @return the board string representing the current state of the board
      */
-    public String toBoardString() {
+    public static String toBoardString() {
         StringBuilder boardString = new StringBuilder("B");
         for (int col = 0; col < SIZE; col++) {
             for (int row = 0; row < SIZE; row++) {
@@ -115,7 +144,6 @@ public class Board {
                 throw new IllegalStateException("Unexpected color char: " + colorChar);
         }
     }
-
     public static int getSize() {
         return SIZE;
     }

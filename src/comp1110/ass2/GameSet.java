@@ -31,40 +31,6 @@ public class GameSet {
     }
 
 
-    /**
-     * Handles a single turn for the current player.
-     * Manages the turn sequence which involves rolling the die, moving Assam,
-     * possibly paying a fee, and making a rug placement.
-     */
-    public void playTurn() {
-        System.out.println("It's " + currentPlayer.getColor() + "'s turn.");
-
-        // Roll the die.
-        int dieResult = Marrakech.rollDie();  // Replace with your actual class name.
-        System.out.println(currentPlayer.getColor() + " rolled a " + dieResult + ".");
-
-        // Move Assam.
-        String newAssamPosition = Marrakech.moveAssam(assam.toString(), dieResult);
-        assam = new Assam(newAssamPosition);
-        System.out.println("Assam is now at " + newAssamPosition);
-
-        // Check if payment is due.
-        int paymentAmount = Marrakech.getPaymentAmount(getCurrentGameState());
-        if (paymentAmount > 0) {
-            // Handle payment.
-            System.out.println(currentPlayer.getColor() + " owes a payment of " + paymentAmount + ".");
-            // ... might want to adjust player's funds here.
-        }
-
-        // Make a rug placement.
-        String newPlacement = Marrakech.makePlacement(getCurrentGameState(), getCurrentRugState());
-        System.out.println(currentPlayer.getColor() + " placed a rug: " + newPlacement);
-        // ... Update the board with the new rug placement.
-
-        // Switch to the next player.
-        switchPlayer();
-    }
-
 
     /**
      * Switches to the next player in the sequence.
@@ -93,6 +59,56 @@ public class GameSet {
 
     public String getCurrentAssamState() {
         return Assam.toAssamString(assam);
+    }
+    public int payDirhams(Player player, int amount) {
+        if (player == null) {
+            return 0;
+        }
+
+        int actualAmountToPay = Math.max(amount, 0);
+
+        if (player.getDirhams() >= actualAmountToPay) {
+            player.setDirhams(player.getDirhams() - actualAmountToPay);
+            return actualAmountToPay;
+        } else {
+            int allDirhams = player.getDirhams();
+            player.setDirhams(0);
+            player.setIsInGame(false);
+            return allDirhams;
+        }
+    }
+
+    public void executePayment(char rugColor, int paymentAmount) {
+        Player payer = currentPlayer;
+        Player receiver = getPlayerByColor(rugColor);
+
+        if (payer != null && receiver != null && payer != receiver) {
+            int actualPaidAmount = payDirhams(payer,paymentAmount);
+            receiver.receiveDirhams(actualPaidAmount);
+        }
+
+    }
+
+    public Player getPlayerByColor(char color) {
+        switch (color) {
+            case 'c':
+                return playerCyan;
+            case 'y':
+                return playerYellow;
+            case 'r':
+                return playerRed;
+            case 'p':
+                return playerPurple;
+            default:
+                return null;
+        }
+    }
+    public String getCurrentPlayerString() {
+        return currentPlayer.toPlayerString();
+    }
+
+    public Board getBoard(){
+        return this.board;
     }
 
     public String getCurrentRugState() { return getCurrentRugState();}

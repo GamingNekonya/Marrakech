@@ -1,35 +1,31 @@
 package comp1110.ass2.gui;
 
 import comp1110.ass2.*;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.scene.layout.Pane;
 
-import static comp1110.ass2.Marrakech.moveAssam;
+import java.util.List;
 
 public class Game extends Application {
     private Scene mainGameScene;
-
     public static final int VIEWER_WIDTH = 1200;
     public static final int VIEWER_HEIGHT = 700;
 
@@ -40,14 +36,26 @@ public class Game extends Application {
 
     private final Group boardGroup = new Group();
     private final Group playerInfoGroup = new Group();
+    private Button rollDieBtn;
     private Assam assam;
     private Board board;
-    private ImageView assamImageView;
     private GameSet gameSet = new GameSet();
 
     private int currentPlayerIndex = 0;
 
     private static Game instance;
+
+    private gameStage currentStage;
+
+    private EventHandler<KeyEvent> keyEventHandler;
+
+    private Circle currentAssamCircle = null;
+    private Line currentOrientationLine = null;
+
+    private Label statusLabel;
+
+    private Rectangle[][] guiSquares;
+
 
 
     /**
@@ -73,6 +81,14 @@ public class Game extends Application {
             boardStr = "B" + boardStr;
         }
 
+        if (statusLabel == null) {
+            statusLabel = new Label();
+            statusLabel.setLayoutX(10);
+            statusLabel.setLayoutY(VIEWER_HEIGHT - 30);
+            root.getChildren().add(statusLabel);
+        }
+
+
 
         // Initialize objects from strings
         board = new Board(boardStr);
@@ -84,7 +100,6 @@ public class Game extends Application {
         drawBoard();
         displayAssam();
 
-
     }
 
     /**
@@ -92,41 +107,9 @@ public class Game extends Application {
      */
     void makeControls() {
         // Button to roll the die
-        Button rollDieBtn = new Button("Roll the Die");
+        rollDieBtn = new Button("Roll the Die");
         // Text to display the result of the die roll
         Text dieResultTxt = new Text("Die result will appear here");
-
-        // Add the Face_Symbol image to help choose directions.
-        Image compassImage = new Image("./Resources/Facing_Symbol.png");
-        ImageView compassImageView = new ImageView(compassImage);
-        // Button to choose directions
-        Button northBtn = new Button("North");
-        northBtn.setOnAction(e -> setAssamDirection('N'));
-
-        Button southBtn = new Button("South");
-        southBtn.setOnAction(e -> setAssamDirection('S'));
-
-        Button eastBtn = new Button("East");
-        eastBtn.setOnAction(e -> setAssamDirection('E'));
-
-        Button westBtn = new Button("West");
-        westBtn.setOnAction(e -> setAssamDirection('W'));
-
-        Pane directionalPane = new Pane();
-        directionalPane.getChildren().addAll(compassImageView, northBtn, southBtn, eastBtn, westBtn);
-
-        // Adjust button locations
-        northBtn.setLayoutX(25);
-        northBtn.setLayoutY(-30);
-
-        southBtn.setLayoutX(25);
-        southBtn.setLayoutY(110);
-
-        eastBtn.setLayoutX(100);
-        eastBtn.setLayoutY(40);
-
-        westBtn.setLayoutX(-50);
-        westBtn.setLayoutY(40);
 
         /**
          * Set an action on the button. When the button is clicked,
@@ -137,27 +120,40 @@ public class Game extends Application {
             int dieResult = Marrakech.rollDie();
             // Update the text to display the result of the die roll
             dieResultTxt.setText("You rolled: " + dieResult);
-
-            // update the assam position and then move base on dieResult
-            String currentAssamState = "A" + assam.getX() + assam.getY() + assam.getOrientation();
-            String newAssamState = moveAssam(currentAssamState, dieResult);
-            updateAssamPosition(newAssamState);
+            String currentAssamState = assam.toAssamString(assam);
+            String newAssamState = Marrakech.moveAssam(currentAssamState, dieResult);
+            int newX = Character.getNumericValue(newAssamState.charAt(1));
+            int newY = Character.getNumericValue(newAssamState.charAt(2));
+            char newOrientation = newAssamState.charAt(3);
+            assam.updateAssam(newX, newY, newOrientation);
+            rollDieBtn.setDisable(true);
+            displayAssam();
+            currentStage = gameStage.MOVE_ASSAM;
+            waitForPlayerAction();
         });
 
-            // Add the buttons to a layout node
-            HBox controlsBox = new HBox(10);
-            controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt, directionalPane);
-            controlsBox.setLayoutX(VIEWER_WIDTH - 400);
-            controlsBox.setLayoutY(VIEWER_HEIGHT - 200);
-            controls.getChildren().add(controlsBox);
+        // Add the button and text to a layout node and add to the controls group
+        HBox controlsBox = new HBox(10);  // 10 is the spacing between controls
+        controlsBox.getChildren().addAll(rollDieBtn, dieResultTxt);
+        controlsBox.setLayoutX(VIEWER_WIDTH - 200);
+        controlsBox.setLayoutY(VIEWER_HEIGHT - 50);
+
+        controls.getChildren().add(controlsBox);
     }
 
+    /**
+     * Draws the game board on the UI. This method initializes the board's cells
+     * and colors them based on the current state of the game.
+     * Each cell of the board is represented as a rectangle, and the color of the cell
+     * is determined by the color code fetched from the game's logic.
+     */
     private void drawBoard() {
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
                 Rectangle cell = new Rectangle(i * SQUARE_SIZE, j * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
 
                 int colorCode = board.getColorAt(j, i);
+
 
                 Color cellColor;
                 switch(colorCode) {
@@ -181,99 +177,56 @@ public class Game extends Application {
                 cell.setFill(cellColor);
                 cell.setStroke(Color.WHITE);
                 boardGroup.getChildren().add(cell);
+                guiSquares[i][j] = cell;
             }
         }
     }
 
     /**
-     * Use image to show the location of Assam.
-     * Then rotate the Assam based on the direction button
+     * Displays the Assam on the board. The Assam is represented as a circle with a line indicating its orientation.
+     * The position of the Assam is determined by its current coordinates on the board, and its orientation is indicated by a line pointing in one of the four cardinal directions: North, East, South, or West.
      */
     private void displayAssam() {
-        if (assamImageView == null) {
-            assamImageView = new ImageView();
-            assamImageView.setFitWidth(SQUARE_SIZE);
-            assamImageView.setFitHeight(SQUARE_SIZE);
-            assamImageView.setPreserveRatio(true);
-            boardGroup.getChildren().add(assamImageView);
+        int centerX = assam.getX() * SQUARE_SIZE + SQUARE_SIZE / 2;
+        int centerY = assam.getY() * SQUARE_SIZE + SQUARE_SIZE / 2;
+        if (currentAssamCircle != null && currentOrientationLine != null) {
+            boardGroup.getChildren().removeAll(currentAssamCircle, currentOrientationLine);
         }
 
-        assamImageView.setLayoutX(assam.getX() * SQUARE_SIZE);
-        assamImageView.setLayoutY(assam.getY() * SQUARE_SIZE);
-        rotateAssamImage(assam.getOrientation());
-    }
+        Circle assamCircle = new Circle(centerX, centerY, SQUARE_SIZE / 4, Color.BROWN);
 
-    private void rotateAssamImage(char orientation) {
-        Image newImage;
-        switch (orientation) {
+        Line orientationLine = new Line();
+        orientationLine.setStartX(centerX);
+        orientationLine.setStartY(centerY);
+
+        switch (assam.getOrientation()) {
             case 'N':
-                newImage = new Image("./Resources/AssamN.png");
+                orientationLine.setEndX(centerX);
+                orientationLine.setEndY(centerY - SQUARE_SIZE / 4);
                 break;
             case 'E':
-                newImage = new Image("./Resources/AssamE.png");
+                orientationLine.setEndX(centerX + SQUARE_SIZE / 4);
+                orientationLine.setEndY(centerY);
                 break;
             case 'S':
-                newImage = new Image("./Resources/AssamS.png");
+                orientationLine.setEndX(centerX);
+                orientationLine.setEndY(centerY + SQUARE_SIZE / 4);
                 break;
             case 'W':
-                newImage = new Image("./Resources/AssamW.png");
-                break;
-            default:
-                newImage = new Image("./Resources/Assam_S.png");
-                break;
-        }
-        assamImageView.setImage(newImage);
-    }
-
-    /**
-     * Call Marrakech.rotateAssam to set the rotate direction of Assam
-     */
-    private void setAssamDirection(char newDirection) {
-        char currentDirection = assam.getOrientation();
-        int rotation = 0;
-
-        // rotate degree:
-        switch (currentDirection) {
-            case 'N':
-                if (newDirection == 'E') rotation = 90;
-                else if (newDirection == 'W') rotation = 270;
-                break;
-            case 'E':
-                if (newDirection == 'S') rotation = 90;
-                else if (newDirection == 'N') rotation = 270;
-                break;
-            case 'S':
-                if (newDirection == 'W') rotation = 90;
-                else if (newDirection == 'E') rotation = 270;
-                break;
-            case 'W':
-                if (newDirection == 'N') rotation = 90;
-                else if (newDirection == 'S') rotation = 270;
+                orientationLine.setEndX(centerX - SQUARE_SIZE / 4);
+                orientationLine.setEndY(centerY);
                 break;
         }
 
-        // call rotateAssam to obtain the currentAssamState
-        String currentAssamState = "A" + assam.getX() + assam.getY() + currentDirection;
-        String newAssamState = Marrakech.rotateAssam(currentAssamState, rotation);
-
-        // If rotate pass the rotateAssame test, then rotate the Assam Image.
-        if (!newAssamState.equals(currentAssamState)) {
-            assam.setOrientation(newDirection);
-            displayAssam();
+        if (currentAssamCircle != null && currentOrientationLine != null) {
+            boardGroup.getChildren().removeAll(currentAssamCircle, currentOrientationLine);
         }
+
+        currentAssamCircle = assamCircle;
+        currentOrientationLine = orientationLine;
+
+        boardGroup.getChildren().addAll(currentAssamCircle, currentOrientationLine);
     }
-
-    private void updateAssamPosition(String assamState) {
-        int x = Character.getNumericValue(assamState.charAt(1));
-        int y = Character.getNumericValue(assamState.charAt(2));
-        char direction = assamState.charAt(3);
-
-        assam.setX(x);
-        assam.setY(y);
-        assam.setOrientation(direction);
-        displayAssam();
-    }
-
 
     private void displayPlayerInfo(Player player, int index) {
         double startX = 400;
@@ -325,6 +278,7 @@ public class Game extends Application {
     }
 
 
+
     /**
      * Handles keyboard input from the user to control the rotation and movement of Assam.
      *
@@ -350,6 +304,8 @@ public class Game extends Application {
                     rotation = 270; // Rotate left
                 } else if (code == KeyCode.D) {
                     rotation = 90; // Rotate right
+                }else if (code == KeyCode.W) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
             case 'S':
@@ -359,6 +315,8 @@ public class Game extends Application {
                     rotation = 90; // Rotate right
                 } else if (code == KeyCode.D) {
                     rotation = 270; // Rotate left
+                }else if (code == KeyCode.S) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
             case 'W':
@@ -368,6 +326,8 @@ public class Game extends Application {
                     rotation = 90; // Rotate left
                 } else if (code == KeyCode.S) {
                     rotation = 270; // Rotate right
+                }else if (code == KeyCode.A) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
             case 'E':
@@ -377,13 +337,15 @@ public class Game extends Application {
                     rotation = 270; // Rotate right
                 } else if (code == KeyCode.S) {
                     rotation = 90; // Rotate left
+                }else if (code == KeyCode.D) {
+                    rotation = 0; // Do not rotate
                 }
                 break;
         }
 
         if (illegalMove) {
             // Handle illegal move, e.g., show an error message to the player
-            System.out.println("Illegal move! You cannot move Assam backward.");
+            statusLabel.setText("Illegal move! You cannot move Assam backward.");
         }
         else if (rotation != 180) {
             String currentAssamState = assam.toAssamString(assam);
@@ -400,10 +362,52 @@ public class Game extends Application {
 
                 // Update the display
                 displayAssam();
+                disableKeyInput();
+                currentStage = gameStage.ROLL_DICE;
+                waitForPlayerAction();
             }
+            disableKeyInput();
+            currentStage = gameStage.ROLL_DICE;
+            waitForPlayerAction();
         }
     }
 
+    private void enableKeyInput() {
+        if (keyEventHandler != null && mainGameScene != null) {
+            mainGameScene.addEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        }
+    }
+
+    private void disableKeyInput() {
+        if (keyEventHandler != null && mainGameScene != null) {
+            mainGameScene.removeEventHandler(KeyEvent.KEY_PRESSED, keyEventHandler);
+        }
+    }
+
+    /**
+     * Displays a "Draw!" message on the user interface when the game ends in a draw.
+     * The message is centrally placed at the bottom of the game board.
+     */
+    private void displayDrawText() {
+        double startX = (VIEWER_WIDTH - 150) / 2;
+        double startY = 7 * SQUARE_SIZE + 10;
+
+        Label drawLabel = new Label("Draw!");
+        drawLabel.setFont(new Font(40));
+        drawLabel.setTextFill(Color.BLACK);
+        drawLabel.setLayoutX(startX);
+        drawLabel.setLayoutY(startY);
+        drawLabel.setAlignment(Pos.CENTER);
+
+        boardGroup.getChildren().add(drawLabel);
+    }
+
+    /**
+     * Displays a "Winner!" label next to the player information of the winning player.
+     *
+     * @param winnerColor The color identifier of the winning player. It's used to locate
+     *                    the player's information on the user interface.
+     */
     private void displayWinnerText(char winnerColor) {
         for (int i = 0; i < playerInfoGroup.getChildren().size(); i += 4) {
             Node colorBox = playerInfoGroup.getChildren().get(i);
@@ -423,6 +427,13 @@ public class Game extends Application {
         }
     }
 
+    /**
+     * Converts a color character identifier to its corresponding hexadecimal color string.
+     *
+     * @param color A character representing the color.
+     *              'c' for CYAN, 'y' for YELLOW, 'r' for RED, 'p' for PURPLE.
+     * @return A string representing the hexadecimal value of the color, or an empty string if the color identifier is invalid.
+     */
     private String colorToHex(char color) {
         switch (color) {
             case 'c':
@@ -438,6 +449,15 @@ public class Game extends Application {
         }
     }
 
+    private enum gameStage {
+        ROTATE_ASSAM,
+        ROLL_DICE,
+        MOVE_ASSAM,
+        PAY_DIRHAMS,
+        PLACE_CARPET,
+        END_TURN
+    }
+
     /**
      * Advances the game to the next player's turn.
      * This method should handle the transition between players, ensuring that game state variables are updated accordingly,
@@ -446,36 +466,54 @@ public class Game extends Application {
      */
 
     private void nextTurn() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % 4;  // Move to the next player
-        highlightCurrentPlayerInfo();  // Update the UI to reflect the change
-        // ... any other turn-based logic
+        String currentGameState = gameSet.getCurrentGameState();
+        char winner = Marrakech.getWinner(currentGameState);
+        if (winner != 'n') {
+            gameOver(winner);
+        } else {
+            currentStage = gameStage.ROTATE_ASSAM;
+            highlightCurrentPlayerInfo();
+            waitForPlayerAction();
+        }
+    }
+
+    private void waitForPlayerAction() {
+        switch (currentStage) {
+            case ROTATE_ASSAM:
+                enableKeyInput();
+                break;
+            case ROLL_DICE:
+                rollDieBtn.setDisable(false);
+                break;
+            case MOVE_ASSAM:
+                currentStage = gameStage.PAY_DIRHAMS;
+                waitForPlayerAction();
+                break;
+            case PAY_DIRHAMS:
+                gameSet.executePayment(assam.getCurrentAssamPositionRugColor(),Marrakech.getPaymentAmount(gameSet.getCurrentGameState()));
+                currentStage = gameStage.PLACE_CARPET;
+                waitForPlayerAction();
+                break;
+            case PLACE_CARPET:
+                highlightAdjacentSquares(assam.getX(), assam.getY());
+                break;
+            case END_TURN:
+                nextTurn();
+                break;
+        }
+    }
+
+
+    private void gameOver(char winner) {
+        if (winner == 't') {
+            displayDrawText();
+        } else {
+            displayWinnerText(winner);
+        }
     }
 
     public void startGame(){
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.seconds(1),
-                ae -> {
-                    if (!Marrakech.isGameOver(gameSet.getCurrentGameState())){
-                        nextTurn();
-                    }
-                    else {
-                        //Game end logic here
-                        ((Timeline)ae.getSource()).stop();
-                        String gameState = gameSet.getCurrentGameState();
-
-                        char winner = Marrakech.getWinner(gameState);
-                        if (winner != 'n') {
-                            if (winner == 't') {
-                                //
-                            } else {
-                                displayWinnerText(winner);
-                            }
-                        }
-                    }
-                }
-        ));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        nextTurn();
     }
 
 
@@ -483,19 +521,66 @@ public class Game extends Application {
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Marrakech Game");
         this.mainGameScene = new Scene(root, VIEWER_WIDTH, VIEWER_HEIGHT);
-        this.mainGameScene.setOnKeyPressed(event -> handleKeyInput(event.getCode()));
-
+        guiSquares = new Rectangle[board.getSize()][board.getSize()];
+        this.keyEventHandler = new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                handleKeyInput(event.getCode());
+            }
+        };
         makeControls();  // Create the controls
+        rollDieBtn.setDisable(true);
         root.getChildren().add(controls);
         displayState(gameSet.getCurrentGameState());
         StartScene startScene = new StartScene(primaryStage, this);
         startGame();
     }
 
+    public void highlightAdjacentSquares(int currentAssamX, int currentAssamY) {
+        int[][] adjacentCoordinates = {
+                {currentAssamX - 1, currentAssamY},
+                {currentAssamX + 1, currentAssamY},
+                {currentAssamX, currentAssamY - 1},
+                {currentAssamX, currentAssamY + 1}
+        };
+
+        for (int[] coordinates : adjacentCoordinates) {
+            int x = coordinates[0];
+            int y = coordinates[1];
+
+            if (x >= 0 && x < 7 && y >= 0 && y < 7) {
+                Rectangle rectangle = guiSquares[x][y];
+                if (rectangle != null) {
+                    rectangle.setStrokeWidth(5);
+                    rectangle.setStroke(Color.BLACK);
+                }
+            }
+        }
+    }
+
+
+    private void clearHighlights() {
+        for (int i = 0; i < board.getSize(); i++) {
+            for (int j = 0; j < board.getSize(); j++) {
+                Rectangle square = guiSquares[i][j];
+                square.setStroke(Color.BLACK);
+                square.setStrokeWidth(1);
+            }
+        }
+    }
+
+    /**
+     * Switches the current scene to the main game scene.
+     *
+     * @param primaryStage The primary stage of the application where scenes are displayed.
+     *                     This is the main container of the JavaFX application.
+     */
     public void switchToMainScene(Stage primaryStage) {
         primaryStage.setScene(this.mainGameScene);
         primaryStage.show();
+        enableKeyInput();
     }
+
     public Game(){
         instance = this;
     }

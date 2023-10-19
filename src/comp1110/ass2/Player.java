@@ -56,6 +56,7 @@ public class Player {
     }
 
     public void setDirhams(int dirhams) {
+
         this.dirhams = dirhams;
     }
 
@@ -63,7 +64,7 @@ public class Player {
         this.rugs = rugs;
     }
 
-    public void setInGame(boolean inGame) {
+    public void setIsInGame(boolean inGame) {
         isInGame = inGame;
     }
 
@@ -71,6 +72,7 @@ public class Player {
      * Player's color.
      */
     public char getColor() {
+
         return color;
     }
 
@@ -78,6 +80,7 @@ public class Player {
      * The number of dirhanms the player currently possesses.
      */
     public int getDirhams() {
+
         return dirhams;
     }
 
@@ -96,26 +99,13 @@ public class Player {
         return isInGame;
     }
 
-    /**
-     * Constructs a new player based on a player string.
-     *
-     * @param playerString The string representing the player's details.
-     */
 
-    /**
-     * Transfers dirhams from this player to another.
-     *
-     * @param receiver The player receiving the dirhams.
-     * @param amount   The amount of dirhams to transfer.
-     */
-
-    public void pay(Player receiver, int amount) {
-        if (this.dirhams >= amount) {
-            this.dirhams -= amount;
-            receiver.dirhams += amount;
-        } else {
-            System.out.println("Not enough dirhams!");
+    public void receiveDirhams(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Amount to receive cannot be negative");
         }
+        this.dirhams += amount;
     }
+
 
 }
