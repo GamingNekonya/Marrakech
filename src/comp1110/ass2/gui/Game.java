@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -40,6 +41,7 @@ public class Game extends Application {
     private final Group playerInfoGroup = new Group();
     private Assam assam;
     private Board board;
+    private ImageView assamImageView;
     private GameSet gameSet = new GameSet();
 
     private int currentPlayerIndex = 0;
@@ -71,7 +73,6 @@ public class Game extends Application {
         }
 
 
-
         // Initialize objects from strings
         board = new Board(boardStr);
         assam = new Assam(assamStr);
@@ -81,6 +82,7 @@ public class Game extends Application {
         root.getChildren().addAll(boardGroup, playerInfoGroup);
         drawBoard();
         displayAssam();
+
 
     }
 
@@ -148,35 +150,41 @@ public class Game extends Application {
         }
     }
     private void displayAssam() {
-        int centerX = assam.getX() * SQUARE_SIZE + SQUARE_SIZE / 2;
-        int centerY = assam.getY() * SQUARE_SIZE + SQUARE_SIZE / 2;
+        if (assamImageView == null) {
+            assamImageView = new ImageView();
+            assamImageView.setFitWidth(SQUARE_SIZE);  // 设置图片的宽度
+            assamImageView.setFitHeight(SQUARE_SIZE); // 设置图片的高度
+            assamImageView.setPreserveRatio(true);   // 保持原始比例
+            boardGroup.getChildren().add(assamImageView);
+        }
 
-        Circle assamCircle = new Circle(centerX, centerY, SQUARE_SIZE / 4, Color.BROWN);
+        assamImageView.setLayoutX(assam.getX() * SQUARE_SIZE);
+        assamImageView.setLayoutY(assam.getY() * SQUARE_SIZE);
+        rotateAssamImage(assam.getOrientation());  // 设置正确的图像
+    }
 
-        Line orientationLine = new Line();
-        orientationLine.setStartX(centerX);
-        orientationLine.setStartY(centerY);
+    private void rotateAssamImage(char orientation) {
+        Image newImage;
 
-        switch (assam.getOrientation()) {
+        switch (orientation) {
             case 'N':
-                orientationLine.setEndX(centerX);
-                orientationLine.setEndY(centerY - SQUARE_SIZE / 4);
+                newImage = new Image("./Resources/AssamN.png");
                 break;
             case 'E':
-                orientationLine.setEndX(centerX + SQUARE_SIZE / 4);
-                orientationLine.setEndY(centerY);
+                newImage = new Image("./Resources/AssamE.png");
                 break;
             case 'S':
-                orientationLine.setEndX(centerX);
-                orientationLine.setEndY(centerY + SQUARE_SIZE / 4);
+                newImage = new Image("./Resources/AssamS.png");
                 break;
             case 'W':
-                orientationLine.setEndX(centerX - SQUARE_SIZE / 4);
-                orientationLine.setEndY(centerY);
+                newImage = new Image("./Resources/AssamW.png");
+                break;
+            default:
+                newImage = new Image("./Resources/Assam_S.png"); // 默认使用朝向南的图像
                 break;
         }
 
-        boardGroup.getChildren().addAll(assamCircle, orientationLine);
+        assamImageView.setImage(newImage);
     }
 
     private void displayPlayerInfo(Player player, int index) {
